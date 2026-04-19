@@ -1,11 +1,10 @@
 ; HA DeskLink Inno Setup Installer
-#define Version ReadFile(FileCombine(SourcePath, "..\VERSION"))
 #define AppName "HA DeskLink"
 #define AppExe "HA_DeskLink.exe"
 
 [Setup]
 AppName={#AppName}
-AppVersion={#Version}
+AppVersion=2.0.2
 AppPublisher=Fabian Kirchweger
 AppPublisherURL=https://github.com/FKirchweger/ha-desklink-dotnet
 AppSupportURL=https://github.com/FKirchweger/ha-desklink-dotnet/issues
@@ -14,7 +13,7 @@ DefaultGroupName={#AppName}
 UninstallDisplayName={#AppName}
 UninstallDisplayIcon={app}\{#AppExe}
 OutputDir=output
-OutputBaseFilename=HA_DeskLink_Setup_{#Version}
+OutputBaseFilename=HA_DeskLink_Setup_2.0.2
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
