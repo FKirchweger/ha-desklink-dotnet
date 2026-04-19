@@ -61,7 +61,7 @@ public class HaApiClient
             os_name = "Windows",
             os_version = Environment.OSVersion.VersionString,
             manufacturer = "Custom",
-            model = $"PC ({Environment.Is64BitOperatingSystem ? "x64" : "x86"})",
+            model = $"PC ({(Environment.Is64BitOperatingSystem ? "x64" : "x86")})",
             supports_encryption = false,
         };
 
