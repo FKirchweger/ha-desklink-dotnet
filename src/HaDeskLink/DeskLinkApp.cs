@@ -91,7 +91,6 @@ public class DeskLinkApp
                 try { await _api.RegisterSensorAsync(sensor); }
                 catch { }
             }
-            await _api.RegisterCommandButtonsAsync();
             await _api.UpdateSensorStatesAsync(initial);
             await _api.SendLocationAsync();
         }
@@ -205,7 +204,6 @@ public class DeskLinkApp
                     try { await _api.RegisterSensorAsync(sensor); }
                     catch { }
                 }
-                await _api.RegisterCommandButtonsAsync();
             }
         }
         catch { }

@@ -19,6 +19,7 @@ public class HaApiClient
     private string _webhookId = "";
     private string _cloudUrl = "";
     private string _deviceId = "";
+    private string _token = "";
     private readonly string _configDir;
 
     private string WebhookUrl => string.IsNullOrEmpty(_cloudUrl)
@@ -37,6 +38,7 @@ public class HaApiClient
 
     public void SetToken(string token)
     {
+        _token = token;
         _http.DefaultRequestHeaders.Clear();
         _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
     }
@@ -85,12 +87,13 @@ public class HaApiClient
             _haUrl = data.RootElement.GetProperty("ha_url").GetString() ?? "";
             _webhookId = data.RootElement.GetProperty("webhook_id").GetString() ?? "";
             _cloudUrl = data.RootElement.TryGetProperty("cloud_url", out var cu) ? cu.GetString() ?? "" : "";
+            var tokenPath = Path.Combine(_configDir, "token.txt");
+            if (File.Exists(tokenPath)) _token = File.ReadAllText(tokenPath).Trim();
             return !string.IsNullOrEmpty(_webhookId);
         }
         catch { return false; }
     }
 
-    /// <summary>Register a sensor entity.</summary>
     public async Task RegisterSensorAsync(SensorData sensor)
     {
         var sensorDict = new Dictionary<string, object>
@@ -109,43 +112,6 @@ public class HaApiClient
         var payload = new { type = "register_sensor", data = sensorDict };
         var json = JsonSerializer.Serialize(payload);
         await _http.PostAsync(WebhookUrl, new StringContent(json, Encoding.UTF8, "application/json"));
-    }
-
-    /// <summary>Register a button entity (for commands like shutdown, restart).</summary>
-    public async Task RegisterButtonAsync(string uniqueId, string name, string icon = "")
-    {
-        var payload = new Dictionary<string, object>
-        {
-            ["type"] = "register_sensor",
-            ["data"] = new Dictionary<string, object>
-            {
-                ["type"] = "button",
-                ["unique_id"] = uniqueId,
-                ["name"] = name,
-                ["state"] = "unavailable",
-            }
-        };
-        if (!string.IsNullOrEmpty(icon)) ((Dictionary<string, object>)payload["data"])["icon"] = icon;
-        var json = JsonSerializer.Serialize(payload);
-        await _http.PostAsync(WebhookUrl, new StringContent(json, Encoding.UTF8, "application/json"));
-    }
-
-    /// <summary>Register all command buttons.</summary>
-    public async Task RegisterCommandButtonsAsync()
-    {
-        var buttons = new[]
-        {
-            ("shutdown", "Herunterfahren", "mdi:power"),
-            ("restart", "Neustart", "mdi:restart"),
-            ("hibernate", "Ruhezustand", "mdi:sleep"),
-            ("lock", "Sperren", "mdi:lock"),
-        };
-
-        foreach (var (id, name, icon) in buttons)
-        {
-            try { await RegisterButtonAsync(id, name, icon); }
-            catch { }
-        }
     }
 
     public async Task UpdateSensorStatesAsync(List<SensorData> sensors)
@@ -184,7 +150,6 @@ public class HaApiClient
         await _http.PostAsync(WebhookUrl, new StringContent(json, Encoding.UTF8, "application/json"));
     }
 
-    /// <summary>Check GitHub for newer version. Returns download URL if update available, null otherwise.</summary>
     public async Task<string?> CheckForUpdateAsync()
     {
         try
@@ -201,14 +166,11 @@ public class HaApiClient
             var currentVersion = GetVersion();
             if (tagName != currentVersion && !string.IsNullOrEmpty(tagName))
             {
-                // Find the exe asset
                 foreach (var asset in data.RootElement.GetProperty("assets").EnumerateArray())
                 {
                     var name = asset.GetProperty("name").GetString() ?? "";
                     if (name.EndsWith(".exe"))
-                    {
                         return asset.GetProperty("browser_download_url").GetString();
-                    }
                 }
             }
         }
@@ -233,6 +195,6 @@ public class HaApiClient
             if (File.Exists(vfile)) return File.ReadAllText(vfile).Trim();
         }
         catch { }
-        return "2.0.0";
+        return "2.0.4";
     }
 }
