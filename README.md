@@ -8,7 +8,7 @@ Geschrieben in **C# / .NET 8** mit LibreHardwareMonitorLib für echte Hardware-S
 - 🌡️ **CPU & GPU Temperatur** – echte Werte dank LibreHardwareMonitorLib
 - 📊 **Alle Sensoren** – CPU, RAM, alle Laufwerke (C:, D:, etc.), Battery, Uptime
 - 🖥️ **Eingebettetes Dashboard** – WebView2 (mit Auto-Install falls fehlend)
-- ⚡ **PC-Befehle aus HA** – Shutdown, Restart, Hibernate, Lock per Benachrichtigung
+- ⚡ **PC-Befehle aus HA** – Shutdown, Restart, Hibernate, Lock, und mehr per Benachrichtigung
 - 📬 **Benachrichtigungen** – HA sendet Toast-Notifications an den PC
 - 🔌 **mobile_app Protokoll** – identisch zur Handy-App, keine Extra-Konfiguration in HA nötig
 - 🔄 **Auto-Update** von GitHub Releases
@@ -29,7 +29,27 @@ Geschrieben in **C# / .NET 8** mit LibreHardwareMonitorLib für echte Hardware-S
 
 HA DeskLink empfängt Befehle über **Benachrichtigungen** – genau wie die Handy-App. Keine Extra-Konfiguration in HA nötig!
 
-### Herunterfahren
+### Alle verfügbaren Befehle
+
+| Befehl | Schreibweise | Wirkung |
+|---|---|---|
+| Herunterfahren | `shutdown` | Fährt den PC in 30 Sekunden herunter |
+| Neustarten | `restart` | Startet den PC in 30 Sekunden neu |
+| Ruhezustand | `hibernate` | Versetzt den PC in den Ruhezustand |
+| PC sperren | `lock` | Sperrt den Windows-Bildschirm |
+| Lautstärke stumm | `mute` | Schaltet den Ton stumm |
+| Lautstärke lauter | `volume_up` | Erhöht die Lautstärke um 10% |
+| Lautstärke leiser | `volume_down` | Verringert die Lautstärke um 10% |
+| Monitor an | `monitor_on` | Schaltet den Monitor an (wenn aus) |
+| Monitor aus | `monitor_off` | Schaltet den Monitor aus |
+| Bildschirmfoto | `screenshot` | Macht einen Screenshot |
+| Nachricht | *(kein command)* | Zeigt nur eine Benachrichtigung an |
+
+> ⚠️ `mute`, `volume_up`, `volume_down`, `monitor_on`, `monitor_off` und `screenshot` kommen in künftigen Versionen!
+
+### Beispiele
+
+#### Herunterfahren
 ```yaml
 service: notify.mobile_app_ha_desklink
 data:
@@ -39,7 +59,7 @@ data:
     command: "shutdown"
 ```
 
-### Neustarten
+#### Neustarten
 ```yaml
 service: notify.mobile_app_ha_desklink
 data:
@@ -49,7 +69,7 @@ data:
     command: "restart"
 ```
 
-### Ruhezustand
+#### Ruhezustand
 ```yaml
 service: notify.mobile_app_ha_desklink
 data:
@@ -59,7 +79,7 @@ data:
     command: "hibernate"
 ```
 
-### PC sperren
+#### PC sperren
 ```yaml
 service: notify.mobile_app_ha_desklink
 data:
@@ -69,7 +89,7 @@ data:
     command: "lock"
 ```
 
-### Einfache Benachrichtigung (ohne Befehl)
+#### Einfache Benachrichtigung (ohne Befehl)
 ```yaml
 service: notify.mobile_app_ha_desklink
 data:
@@ -77,15 +97,7 @@ data:
   message: "Müll rausbringen nicht vergessen!"
 ```
 
-### Verfügbare Befehle
-| Befehl | Wirkung |
-|---|---|
-| `shutdown` | Fährt den PC in 30 Sekunden herunter |
-| `restart` | Startet den PC in 30 Sekunden neu |
-| `hibernate` | Versetzt den PC in den Ruhezustand |
-| `lock` | Sperrt den Windows-Bildschirm |
-
-### Tipp: Automatisierung in HA
+### Automatisierung in HA
 ```yaml
 automation:
   - alias: "PC um 22 Uhr herunterfahren"
@@ -103,6 +115,20 @@ automation:
           message: "Der PC wird jetzt heruntergefahren."
           data:
             command: "shutdown"
+```
+
+### Dashboard-Button in HA
+```yaml
+type: button
+name: "PC herunterfahren"
+tap_action:
+  action: call-service
+  service: notify.mobile_app_ha_desklink
+  service_data:
+    title: "PC herunterfahren"
+    message: "Wird heruntergefahren..."
+    data:
+      command: "shutdown"
 ```
 
 ## Sensoren in Home Assistant
