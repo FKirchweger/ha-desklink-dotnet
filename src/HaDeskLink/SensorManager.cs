@@ -28,13 +28,16 @@ public class SensorManager : IDisposable
             IsStorageEnabled = true,
             IsBatteryEnabled = true,
         };
-        _computer.Open();
+        try { _computer.Open(); }
+        catch { /* LibreHardwareMonitor native DLLs may fail in single-file mode */ }
     }
 
     public List<SensorData> CollectAll()
     {
         var sensors = new List<SensorData>();
-        _computer.Accept(new UpdateVisitor());
+
+        try { _computer.Accept(new UpdateVisitor()); }
+        catch { }
 
         sensors.AddRange(GetCpuSensors());
         sensors.AddRange(GetGpuSensors());

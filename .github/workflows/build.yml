@@ -29,13 +29,17 @@ jobs:
 
       - name: Publish
         run: |
-          dotnet publish src/HaDeskLink -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -o publish
+          dotnet publish src/HaDeskLink -c Release -r win-x64 --self-contained -o publish
+
+      - name: List output
+        shell: bash
+        run: ls -la publish/ | head -30
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: HA-DeskLink-EXE
-          path: publish/HA_DeskLink.exe
+          path: publish/
 
   release:
     needs: build
@@ -44,27 +48,44 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version
+        id: version
+        shell: bash
+        run: echo "VERSION=$(cat VERSION)" >> $GITHUB_OUTPUT
+
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: HA-DeskLink-EXE
           path: dist/
 
+      - name: Create zip
+        run: |
+          cd dist
+          zip -r ../HA_DeskLink_${{ steps.version.outputs.VERSION }}.zip .
+          cd ..
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/HA_DeskLink.exe
+          files: |
+            HA_DeskLink_${{ steps.version.outputs.VERSION }}.zip
           body: |
-            HA DeskLink v2.0 – C#/.NET 8
+            HA DeskLink v${{ steps.version.outputs.VERSION }}
 
             ## Installation
-            `HA_DeskLink.exe` herunterladen und starten.
+            ZIP herunterladen, entpacken, `HA_DeskLink.exe` starten.
             Setup-Wizard f\u00fchrt durch die Verbindung mit Home Assistant.
+
+            **Wichtig:** Als Administrator starten f\u00fcr CPU/GPU-Temperatur!
 
             ## Features
             - CPU & GPU Temperatur (LibreHardwareMonitor)
             - Alle Laufwerke (C:, D:, etc.)
-            - Eingebettetes HA Dashboard (WebView2)
-            - HA Commands (Shutdown, Restart, Lock, Hibernate)
+            - Command-Buttons (Shutdown, Restart, Lock, Hibernate)
+            - WebView2 Dashboard (mit Auto-Install)
+            - Auto-Update von GitHub
             - Nativer Windows Tray
           generate_release_notes: false
