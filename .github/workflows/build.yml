@@ -14,35 +14,54 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Read version
-        id: version
-        shell: bash
-        run: echo "VERSION=$(cat VERSION)" >> $GITHUB_OUTPUT
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      - name: Restore
-        run: dotnet restore src/HaDeskLink
-
       - name: Publish
         run: |
-          dotnet publish src/HaDeskLink -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
-
-      - name: List output
-        shell: bash
-        run: ls -la publish/ | head -30
+          dotnet publish src/HaDeskLink -c Release -r win-x64 --self-contained -o publish
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: HA-DeskLink-EXE
+          name: HA-DeskLink-Publish
           path: publish/
 
-  release:
+  installer:
     needs: build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download publish
+        uses: actions/download-artifact@v4
+        with:
+          name: HA-DeskLink-Publish
+          path: publish/
+
+      - name: Install Inno Setup
+        run: |
+          choco install innosetup -y
+
+      - name: Read version
+        id: version
+        shell: bash
+        run: echo "VERSION=$(cat VERSION)" >> $GITHUB_OUTPUT
+
+      - name: Build Installer
+        run: |
+          iscc installer.iss
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: HA-DeskLink-Installer
+          path: output/HA_DeskLink_Setup_*.exe
+
+  release:
+    needs: installer
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     permissions:
@@ -55,24 +74,24 @@ jobs:
         shell: bash
         run: echo "VERSION=$(cat VERSION)" >> $GITHUB_OUTPUT
 
-      - name: Download artifact
+      - name: Download installer
         uses: actions/download-artifact@v4
         with:
-          name: HA-DeskLink-EXE
+          name: HA-DeskLink-Installer
           path: dist/
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/HA_DeskLink.exe
+          files: dist/HA_DeskLink_Setup_*.exe
           body: |
             HA DeskLink v${{ steps.version.outputs.VERSION }}
 
             ## Installation
-            ZIP herunterladen, entpacken, `HA_DeskLink.exe` starten.
-            Setup-Wizard f\u00fchrt durch die Verbindung mit Home Assistant.
+            `HA_DeskLink_Setup_${{ steps.version.outputs.VERSION }}.exe` herunterladen und ausführen.
+            Installiert nach `C:\Program Files\HA DeskLink\`.
 
-            **Wichtig:** Als Administrator starten f\u00fcr CPU/GPU-Temperatur!
+            **Wichtig:** Als Administrator starten für CPU/GPU-Temperatur!
 
             ## Features
             - CPU & GPU Temperatur (LibreHardwareMonitor)
