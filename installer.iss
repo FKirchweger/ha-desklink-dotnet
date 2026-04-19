@@ -19,6 +19,7 @@ Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
 PrivilegesRequired=admin
+PrivilegesRequiredOverridesAllowed=dialog
 CloseApplications=force
 RestartApplications=no
 SetupIconFile=src\HaDeskLink\Assets\icon.ico
