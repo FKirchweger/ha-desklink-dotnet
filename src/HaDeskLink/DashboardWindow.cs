@@ -1,18 +1,23 @@
 #nullable enable
 using System;
+using System.Diagnostics;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Web.WebView2.WinForms;
 
 namespace HaDeskLink;
 
 /// <summary>
-/// Embedded HA Dashboard using WebView2 (EdgeChromium).
-/// Works on Windows 10/11 without installing Edge – WebView2 Runtime is built-in.
+/// Embedded HA Dashboard using WebView2.
+/// Automatically installs WebView2 Runtime if missing.
 /// </summary>
 public class DashboardWindow : Form
 {
     private WebView2? _webView;
     private readonly string _haUrl;
+    private static bool _installPrompted = false;
 
     public DashboardWindow(string haUrl)
     {
@@ -40,10 +45,49 @@ public class DashboardWindow : Form
         }
         catch (Exception)
         {
-            // WebView2 not available – fallback to default browser
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(_haUrl)
-            { UseShellExecute = true });
-            Close();
+            // WebView2 Runtime missing – offer to install
+            if (!_installPrompted)
+            {
+                _installPrompted = true;
+                Close(); // Close empty window first
+
+                var result = MessageBox.Show(
+                    "WebView2 Runtime wird f\u00fcr das eingebettete Dashboard ben\u00f6tigt.\n\n" +
+                    "Jetzt herunterladen und installieren?\n" +
+                    "(Danach App neu starten)",
+                    "WebView2 fehlt",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    try
+                    {
+                        // Download and run WebView2 bootstrapper
+                        var url = "https://go.microsoft.com/fwlink/p/?LinkId=2124703";
+                        var tmpPath = Path.Combine(Path.GetTempPath(), "MicrosoftEdgeWebview2Setup.exe");
+                        using var http = new HttpClient();
+                        var bytes = await http.GetByteArrayAsync(url);
+                        File.WriteAllBytes(tmpPath, bytes);
+                        Process.Start(new ProcessStartInfo(tmpPath) { UseShellExecute = true });
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Download fehlgeschlagen: {ex.Message}\n\n" +
+                            "Bitte manuell installieren:\nhttps://developer.microsoft.com/en-us/microsoft-edge/webview2/",
+                            "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else
+                {
+                    // Fallback: open in default browser
+                    Process.Start(new ProcessStartInfo(_haUrl) { UseShellExecute = true });
+                }
+            }
+            else
+            {
+                Close();
+                Process.Start(new ProcessStartInfo(_haUrl) { UseShellExecute = true });
+            }
         }
     }
 
