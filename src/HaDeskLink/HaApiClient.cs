@@ -77,20 +77,30 @@ public class HaApiClient
     }
 
     /// <summary>
-    /// Register push notification channel so HA can send notifications TO this device.
-    /// HA creates notify.mobile_app_xxx only when a push_url is registered.
+    /// Update registration with push_url so HA can send notifications to this device.
+    /// Must be called after registration + webhook server start.
     /// </summary>
-    public async Task RegisterPushUrlAsync(string pushUrl)
+    public async Task UpdatePushUrlAsync(string pushUrl, string pushToken)
     {
         if (string.IsNullOrEmpty(_webhookId)) return;
+
+        var is64 = Environment.Is64BitOperatingSystem;
         var payload = new Dictionary<string, object>
         {
-            ["type"] = "push_registration_channel",
+            ["type"] = "update_registration",
             ["data"] = new Dictionary<string, object>
             {
-                ["push_url"] = pushUrl,
-                ["push_token"] = _webhookId,
-            }
+                ["app_version"] = GetVersion(),
+                ["device_name"] = Environment.MachineName,
+                ["manufacturer"] = "Custom",
+                ["model"] = $"PC ({(is64 ? "x64" : "x86")})",
+                ["os_version"] = Environment.OSVersion.VersionString,
+                ["app_data"] = new Dictionary<string, object>
+                {
+                    ["push_url"] = pushUrl,
+                    ["push_token"] = pushToken,
+                },
+            },
         };
         var json = JsonSerializer.Serialize(payload);
         await _http.PostAsync(WebhookUrl, new StringContent(json, Encoding.UTF8, "application/json"));

@@ -59,7 +59,7 @@ public class DeskLinkApp
             if (!string.IsNullOrEmpty(localIp))
             {
                 var pushUrl = $"http://{localIp}:{_webhookServer.Port}/webhook/";
-                _ = _api.RegisterPushUrlAsync(pushUrl);
+                _ = _api.UpdatePushUrlAsync(pushUrl, _webhookServer.Port.ToString());
             }
         }
         catch { }
