@@ -61,6 +61,10 @@ public class HaApiClient
             ["manufacturer"] = "Custom",
             ["model"] = $"PC ({(is64 ? "x64" : "x86")})",
             ["supports_encryption"] = false,
+            ["app_data"] = new Dictionary<string, object>
+            {
+                ["push_websocket_channel"] = true,
+            },
         };
 
         var json = JsonSerializer.Serialize(payload);
@@ -76,11 +80,14 @@ public class HaApiClient
         SaveRegistration(haUrl, token);
     }
 
+    public string GetWebhookId() => _webhookId;
+
     /// <summary>
-    /// Update registration with push_url so HA can send notifications to this device.
-    /// Must be called after registration + webhook server start.
+    /// Update registration with push_websocket_channel so HA knows this device
+    /// receives notifications via WebSocket (not push_url).
+    /// Called after registration.
     /// </summary>
-    public async Task UpdatePushUrlAsync(string pushUrl, string pushToken)
+    public async Task UpdateRegistrationAsync()
     {
         if (string.IsNullOrEmpty(_webhookId)) return;
 
@@ -97,8 +104,7 @@ public class HaApiClient
                 ["os_version"] = Environment.OSVersion.VersionString,
                 ["app_data"] = new Dictionary<string, object>
                 {
-                    ["push_url"] = pushUrl,
-                    ["push_token"] = pushToken,
+                    ["push_websocket_channel"] = true,
                 },
             },
         };

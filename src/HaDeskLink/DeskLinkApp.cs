@@ -47,20 +47,15 @@ public class DeskLinkApp
         // Setup tray FIRST (needed for notifications)
         SetupTray();
 
-        // Start webhook server for commands + notifications
+        // Start WebSocket connection for push notifications (works for all users, no IP needed)
+        var wsClient = new HaWebSocketClient(_config.HaUrl, _config.HaToken, _trayIcon,
+            cmd => CommandHandler.Execute(cmd));
+
         try
         {
             _webhookServer = new WebhookServer(_config.HaToken);
             _webhookServer.SetTrayIcon(_trayIcon);
             _webhookServer.Start();
-
-            // Register push URL so HA can send notifications to this PC
-            var localIp = GetLocalIpAddress();
-            if (!string.IsNullOrEmpty(localIp))
-            {
-                var pushUrl = $"http://{localIp}:{_webhookServer.Port}/webhook/";
-                _ = _api.UpdatePushUrlAsync(pushUrl, _webhookServer.Port.ToString());
-            }
         }
         catch { }
 
@@ -85,12 +80,27 @@ public class DeskLinkApp
             catch { }
         });
 
+        // Start WebSocket connection in background
+        Task.Run(async () =>
+        {
+            try
+            {
+                await wsClient.ConnectAsync();
+                // After connected and auth, subscribe with our webhook_id
+                var webhookId = _api.GetWebhookId();
+                if (!string.IsNullOrEmpty(webhookId))
+                    await wsClient.SubscribeToNotificationsAsync(webhookId);
+            }
+            catch { }
+        });
+
         if (_config.Autostart) Autostart.Enable();
         else Autostart.Disable();
 
         Application.Run();
 
         _cts.Cancel();
+        wsClient.Dispose();
         _webhookServer?.Dispose();
         _sensors?.Dispose();
         _trayIcon?.Dispose();
@@ -108,6 +118,8 @@ public class DeskLinkApp
             }
             await _api.UpdateSensorStatesAsync(initial);
             await _api.SendLocationAsync();
+            // Tell HA this device uses WebSocket push channel (not push_url)
+            await _api.UpdateRegistrationAsync();
         }
         catch { }
 
