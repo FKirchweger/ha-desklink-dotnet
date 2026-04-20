@@ -19,6 +19,10 @@ public class Config
     public bool VerifySsl { get; set; } = false;
     public bool Autostart { get; set; } = true;
     public int SensorInterval { get; set; } = 30;
+    /// <summary>
+    /// Update channel: "stable" = only stable releases, "prerelease" = includes beta/pre-release versions
+    /// </summary>
+    public string UpdateChannel { get; set; } = "stable";
 
     private string ConfigPath => Path.Combine(ConfigDir, "config.json");
 

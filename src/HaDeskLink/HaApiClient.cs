@@ -76,6 +76,26 @@ public class HaApiClient
         SaveRegistration(haUrl, token);
     }
 
+    /// <summary>
+    /// Register push notification channel so HA can send notifications TO this device.
+    /// HA creates notify.mobile_app_xxx only when a push_url is registered.
+    /// </summary>
+    public async Task RegisterPushUrlAsync(string pushUrl)
+    {
+        if (string.IsNullOrEmpty(_webhookId)) return;
+        var payload = new Dictionary<string, object>
+        {
+            ["type"] = "push_registration_channel",
+            ["data"] = new Dictionary<string, object>
+            {
+                ["push_url"] = pushUrl,
+                ["push_token"] = _webhookId,
+            }
+        };
+        var json = JsonSerializer.Serialize(payload);
+        await _http.PostAsync(WebhookUrl, new StringContent(json, Encoding.UTF8, "application/json"));
+    }
+
     public bool LoadRegistration()
     {
         var path = Path.Combine(_configDir, "registration.json");
@@ -150,27 +170,65 @@ public class HaApiClient
         await _http.PostAsync(WebhookUrl, new StringContent(json, Encoding.UTF8, "application/json"));
     }
 
-    public async Task<string?> CheckForUpdateAsync()
+    public async Task<string?> CheckForUpdateAsync(bool includePrerelease = false)
     {
         try
         {
             using var ghClient = new HttpClient();
             ghClient.DefaultRequestHeaders.Add("User-Agent", "HA-DeskLink");
-            var resp = await ghClient.GetAsync("https://api.github.com/repos/FKirchweger/ha-desklink-dotnet/releases/latest");
-            if (!resp.IsSuccessStatusCode) return null;
 
-            var data = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
-            var tagName = data.RootElement.GetProperty("tag_name").GetString() ?? "";
-            if (tagName.StartsWith("v")) tagName = tagName[1..];
-
-            var currentVersion = GetVersion();
-            if (tagName != currentVersion && !string.IsNullOrEmpty(tagName))
+            if (includePrerelease)
             {
-                foreach (var asset in data.RootElement.GetProperty("assets").EnumerateArray())
+                // Get all releases including pre-releases, find the newest
+                var resp = await ghClient.GetAsync("https://api.github.com/repos/FKirchweger/ha-desklink-dotnet/releases");
+                if (!resp.IsSuccessStatusCode) return null;
+                var data = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
+                var currentVersion = GetVersion();
+
+                foreach (var release in data.RootElement.EnumerateArray())
                 {
-                    var name = asset.GetProperty("name").GetString() ?? "";
-                    if (name.EndsWith(".exe"))
-                        return asset.GetProperty("browser_download_url").GetString();
+                    var tagName = release.GetProperty("tag_name").GetString() ?? "";
+                    if (tagName.StartsWith("v")) tagName = tagName[1..];
+
+                    if (tagName != currentVersion && !string.IsNullOrEmpty(tagName))
+                    {
+                        foreach (var asset in release.GetProperty("assets").EnumerateArray())
+                        {
+                            var name = asset.GetProperty("name").GetString() ?? "";
+                            if (name.EndsWith(".exe"))
+                                return asset.GetProperty("browser_download_url").GetString();
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Stable only - use /latest which skips pre-releases
+                // Since all current v2.x are pre-release, we also check all releases
+                // and find the latest non-prerelease
+                var resp = await ghClient.GetAsync("https://api.github.com/repos/FKirchweger/ha-desklink-dotnet/releases");
+                if (!resp.IsSuccessStatusCode) return null;
+                var data = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
+                var currentVersion = GetVersion();
+
+                foreach (var release in data.RootElement.EnumerateArray())
+                {
+                    // Skip pre-releases for stable channel
+                    if (release.TryGetProperty("prerelease", out var pre) && pre.GetBoolean())
+                        continue;
+
+                    var tagName = release.GetProperty("tag_name").GetString() ?? "";
+                    if (tagName.StartsWith("v")) tagName = tagName[1..];
+
+                    if (tagName != currentVersion && !string.IsNullOrEmpty(tagName))
+                    {
+                        foreach (var asset in release.GetProperty("assets").EnumerateArray())
+                        {
+                            var name = asset.GetProperty("name").GetString() ?? "";
+                            if (name.EndsWith(".exe"))
+                                return asset.GetProperty("browser_download_url").GetString();
+                        }
+                    }
                 }
             }
         }
@@ -195,6 +253,6 @@ public class HaApiClient
             if (File.Exists(vfile)) return File.ReadAllText(vfile).Trim();
         }
         catch { }
-        return "2.0.4";
+        return "2.0.6";
     }
 }

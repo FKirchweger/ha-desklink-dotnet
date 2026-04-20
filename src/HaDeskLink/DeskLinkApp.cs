@@ -52,6 +52,14 @@ public class DeskLinkApp
             _webhookServer = new WebhookServer(_config.HaToken);
             _webhookServer.SetTrayIcon(_trayIcon);
             _webhookServer.Start();
+
+            // Register push URL so HA can send notifications to this PC
+            var localIp = GetLocalIpAddress();
+            if (!string.IsNullOrEmpty(localIp))
+            {
+                var pushUrl = $"http://{localIp}:{_webhookServer.Port}/webhook/";
+                _ = _api.RegisterPushUrlAsync(pushUrl);
+            }
         }
         catch { }
 
@@ -60,9 +68,10 @@ public class DeskLinkApp
             Task.Run(() => SensorLoop(_cts.Token));
 
         // Check for updates
+        var channel = _config.UpdateChannel;
         Task.Run(async () =>
         {
-            var updateUrl = await _api.CheckForUpdateAsync();
+            var updateUrl = await _api.CheckForUpdateAsync(includePrerelease: channel == "prerelease");
             if (updateUrl != null)
             {
                 _trayIcon?.ShowBalloonTip(5000, "Update verf\u00fcgbar",
@@ -149,13 +158,15 @@ public class DeskLinkApp
         {
             try
             {
-                var updateUrl = await _api.CheckForUpdateAsync();
+                var channel = _config.UpdateChannel;
+                var updateUrl = await _api.CheckForUpdateAsync(includePrerelease: channel == "prerelease");
                 if (updateUrl != null)
                 {
-                    var result = MessageBox.Show("Neue Version verf\u00fcgbar! Jetzt herunterladen?",
-                        "Update", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    var result = MessageBox.Show(
+                        "Eine neue Version ist verf\u00fcgbar!\n\nJetzt herunterladen und installieren?\n(Die App wird danach neu gestartet)",
+                        "Update verf\u00fcgbar", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (result == DialogResult.Yes)
-                        Process.Start(new ProcessStartInfo(updateUrl) { UseShellExecute = true });
+                        await AutoUpdate(updateUrl);
                 }
                 else
                     MessageBox.Show("HA DeskLink ist auf dem neuesten Stand.", "Update",
@@ -207,6 +218,70 @@ public class DeskLinkApp
             }
         }
         catch { }
+    }
+
+    private async Task AutoUpdate(string downloadUrl)
+    {
+        try
+        {
+            var tempDir = Path.Combine(Path.GetTempPath(), "HA_DeskLink_Update");
+            Directory.CreateDirectory(tempDir);
+            var installerPath = Path.Combine(tempDir, "HA_DeskLink_Setup.exe");
+
+            // Download installer
+            _trayIcon?.ShowBalloonTip(3000, "Update", "Lade Update herunter...", ToolTipIcon.Info);
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("User-Agent", "HA-DeskLink");
+            var bytes = await client.GetByteArrayAsync(downloadUrl);
+            await File.WriteAllBytesAsync(installerPath, bytes);
+
+            // Verify file was downloaded
+            if (!File.Exists(installerPath) || new FileInfo(installerPath).Length < 1000000)
+            {
+                MessageBox.Show("Download fehlgeschlagen \u2013 Datei zu klein.", "Fehler",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Launch installer and exit
+            _trayIcon?.ShowBalloonTip(3000, "Update", "Installiere Update... App wird geschlossen.", ToolTipIcon.Info);
+            var psi = new ProcessStartInfo
+            {
+                FileName = installerPath,
+                Arguments = "/SILENT /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS",
+                UseShellExecute = true,
+                Verb = "runas" // Run as admin
+            };
+            Process.Start(psi);
+
+            // Give it a moment then exit
+            await Task.Delay(2000);
+            Application.Exit();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Update fehlgeschlagen: {ex.Message}\n\nBitte manuell von GitHub herunterladen.",
+                "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private static string GetLocalIpAddress()
+    {
+        try
+        {
+            foreach (var ni in System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (ni.OperationalStatus != System.Net.NetworkInformation.OperationalStatus.Up) continue;
+                if (ni.NetworkInterfaceType == System.Net.NetworkInformation.NetworkInterfaceType.Loopback) continue;
+                foreach (var ip in ni.GetIPProperties().UnicastAddresses)
+                {
+                    if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                        return ip.Address.ToString();
+                }
+            }
+        }
+        catch { }
+        return "";
     }
 
     private static string GetVersion()

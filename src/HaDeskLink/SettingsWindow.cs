@@ -18,6 +18,7 @@ public class SettingsWindow : Form
     private CheckBox _sslCheck = null!;
     private CheckBox _autostartCheck = null!;
     private NumericUpDown _intervalBox = null!;
+    private ComboBox _updateChannelBox = null!;
     private Label _statusLabel = null!;
 
     public SettingsWindow(Config config, Action onReconnect)
@@ -25,7 +26,7 @@ public class SettingsWindow : Form
         _config = config;
         _onReconnect = onReconnect;
         Text = "HA DeskLink - Einstellungen";
-        Size = new System.Drawing.Size(520, 480);
+        Size = new System.Drawing.Size(520, 550);
         MinimumSize = new System.Drawing.Size(480, 420);
         StartPosition = FormStartPosition.CenterScreen;
         FormBorderStyle = FormBorderStyle.Sizable;
@@ -75,6 +76,21 @@ public class SettingsWindow : Form
         _intervalBox = new NumericUpDown { Minimum = 5, Maximum = 300, Value = 30, Dock = DockStyle.Fill };
         panel.Controls.Add(_intervalBox, 1, 5);
 
+        panel.Controls.Add(new Label { Text = "Update-Kanal:", Anchor = AnchorStyles.Left, AutoSize = true }, 0, 6);
+        _updateChannelBox = new ComboBox { Dock = DockStyle.Fill, DropDownStyle = ComboBoxStyle.DropDownList };
+        _updateChannelBox.Items.AddRange(new object[] { "stable", "prerelease" });
+        panel.Controls.Add(_updateChannelBox, 1, 6);
+
+        var channelHint = new Label
+        {
+            Text = "Stable = nur fertige Versionen | Pre-Release = auch Beta-Versionen",
+            Font = new System.Drawing.Font("", 7),
+            ForeColor = System.Drawing.Color.Gray,
+            AutoSize = true,
+        };
+        panel.Controls.Add(channelHint, 0, 7);
+        panel.SetColumnSpan(channelHint, 2);
+
         var btnPanel = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight };
         var saveBtn = new Button { Text = "Speichern", Size = new System.Drawing.Size(100, 35) };
         saveBtn.Click += OnSave;
@@ -82,11 +98,11 @@ public class SettingsWindow : Form
         var reconnectBtn = new Button { Text = "Neu verbinden", Size = new System.Drawing.Size(120, 35) };
         reconnectBtn.Click += OnReconnectClicked;
         btnPanel.Controls.Add(reconnectBtn);
-        panel.Controls.Add(btnPanel, 0, 6);
+        panel.Controls.Add(btnPanel, 0, 8);
         panel.SetColumnSpan(btnPanel, 2);
 
         _statusLabel = new Label { Text = "Bereit", ForeColor = System.Drawing.Color.Gray, AutoSize = true };
-        panel.Controls.Add(_statusLabel, 0, 7);
+        panel.Controls.Add(_statusLabel, 0, 9);
         panel.SetColumnSpan(_statusLabel, 2);
 
         Controls.Add(panel);
@@ -99,6 +115,7 @@ public class SettingsWindow : Form
         _sslCheck.Checked = _config.VerifySsl;
         _autostartCheck.Checked = _config.Autostart;
         _intervalBox.Value = _config.SensorInterval;
+        _updateChannelBox.SelectedIndex = _config.UpdateChannel == "prerelease" ? 1 : 0;
     }
 
     private void OnSave(object? sender, EventArgs e)
@@ -108,6 +125,7 @@ public class SettingsWindow : Form
         _config.VerifySsl = _sslCheck.Checked;
         _config.Autostart = _autostartCheck.Checked;
         _config.SensorInterval = (int)_intervalBox.Value;
+        _config.UpdateChannel = _updateChannelBox.SelectedItem?.ToString() ?? "stable";
         _config.Save();
         if (_config.Autostart) Autostart.Enable(); else Autostart.Disable();
         _statusLabel.Text = "Gespeichert!";
