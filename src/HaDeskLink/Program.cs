@@ -1,6 +1,9 @@
 #nullable enable
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -30,6 +33,27 @@ static class Program
 
         try
         {
+            // Request admin rights if not running as admin (needed for LibreHardwareMonitor)
+            if (!IsRunningAsAdmin())
+            {
+                try
+                {
+                    var exePath = Environment.ProcessPath ?? AppDomain.CurrentDomain.BaseDirectory + "HA_DeskLink.exe";
+                    var psi = new ProcessStartInfo(exePath)
+                    {
+                        UseShellExecute = true,
+                        Verb = "runas",
+                        WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory
+                    };
+                    Process.Start(psi);
+                    return; // Exit this non-admin instance
+                }
+                catch
+                {
+                    // User declined UAC – continue without admin (sensors may not work)
+                }
+            }
+
             var config = Config.Load();
             var configDir = Config.GetConfigDir();
 
@@ -61,5 +85,16 @@ static class Program
         var dir = Config.GetConfigDir();
         Directory.CreateDirectory(dir);
         return Path.Combine(dir, "error.log");
+    }
+
+    private static bool IsRunningAsAdmin()
+    {
+        try
+        {
+            using var identity = WindowsIdentity.GetCurrent();
+            var principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+        catch { return false; }
     }
 }

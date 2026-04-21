@@ -83,6 +83,30 @@ public class DeskLinkApp
             catch { }
         });
 
+        // Periodic update check every 2 hours
+        Task.Run(async () =>
+        {
+            while (!_cts.IsCancellationRequested)
+            {
+                try
+                {
+                    await Task.Delay(TimeSpan.FromHours(2), _cts.Token);
+                }
+                catch { break; }
+                try
+                {
+                    var updateUrl = await _api.CheckForUpdateAsync(includePrerelease: _config.UpdateChannel == "prerelease");
+                    if (updateUrl != null)
+                    {
+                        _trayIcon?.ShowBalloonTip(5000, "Update verf\u00fcgbar",
+                            "Neue Version wird heruntergeladen und installiert...", ToolTipIcon.Info);
+                        await AutoUpdate(updateUrl);
+                    }
+                }
+                catch { }
+            }
+        });
+
         // Start WebSocket connection in background
         Task.Run(async () =>
         {
