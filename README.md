@@ -21,7 +21,7 @@ Geschrieben in **C# / .NET 8** mit LibreHardwareMonitorLib für echte Hardware-S
 
 ## Installation
 1. Neueste `HA_DeskLink_Setup_x.x.x.exe` von [Releases](https://github.com/FKirchweger/ha-desklink-dotnet/releases/latest) herunterladen
-2. Installer ausführen – ⚠️ **Admin-Rechte erforderlich!** Der Installer fragt automatisch nach erhöhten Rechten (UAC-Dialog). Ohne Admin-Rechte kommt es zu einer Fehlermeldung.
+2. Die `HA_DeskLink_Setup_x.x.x.exe` herunterladen, dann im Download-Ordner **Rechtsklick → „Als Administrator ausführen“** wählen. ⚠️ Ein normaler Doppelklick oder das Warten auf die UAC-Anfrage führt zu einer Fehlermeldung – bitte direkt per Rechtsklick als Administrator starten.
 3. HA URL + Long-Lived Token eingeben
 4. Fertig! 🎉
 
@@ -45,7 +45,7 @@ HA DeskLink empfängt Befehle über **Benachrichtigungen** – genau wie die Han
 | Bildschirmfoto | `screenshot` | Macht einen Screenshot |
 | Nachricht | *(kein command)* | Zeigt nur eine Benachrichtigung an |
 
-> ⚠️ `mute`, `volume_up`, `volume_down`, `monitor_on`, `monitor_off` und `screenshot` kommen in künftigen Versionen!
+> ⚠️ `mute`, `volume_up`, `volume_down`, `monitor_on`, `monitor_off` und `screenshot` sind ab v2.1.0 verfügbar!
 
 ### Beispiele
 
@@ -139,6 +139,10 @@ HA DeskLink erstellt automatisch Sensoren in HA:
 |---|---|
 | `sensor.ha_desklink_cpu_usage` | CPU-Auslastung in % |
 | `sensor.ha_desklink_cpu_temperature` | CPU-Temperatur in °C (braucht Admin) |
+| `sensor.ha_desklink_cpu_clock` | CPU-Taktrate in MHz |
+| `sensor.ha_desklink_gpu_load` | GPU-Auslastung in % |
+| `sensor.ha_desklink_gpu_temperature` | GPU-Temperatur in °C |
+| `sensor.ha_desklink_gpu_fan_speed` | GPU-Lüfter in RPM |
 | `sensor.ha_desklink_memory_usage` | RAM-Auslastung in % |
 | `sensor.ha_desklink_memory_used` | RAM verwendet in GB |
 | `sensor.ha_desklink_memory_free` | RAM frei in GB |
@@ -157,7 +161,6 @@ HA DeskLink erstellt automatisch Sensoren in HA:
 | `sensor.ha_desklink_wifi_ssid` | Verbundenes WiFi-Netzwerk (Name) |
 | `sensor.ha_desklink_wifi_signal` | WiFi-Signalstärke in % |
 | `sensor.ha_desklink_active_window` | Aktives Fenster/Titel |
-| `sensor.ha_desklink_cpu_clock` | CPU-Taktrate in MHz |
 | `sensor.ha_desklink_network_upload` | Upload-Geschwindigkeit in KB/s |
 | `sensor.ha_desklink_network_download` | Download-Geschwindigkeit in KB/s |
 | `sensor.ha_desklink_fan_*` | Lüfter-Drehzahlen in RPM (CPU, GPU, Mainboard) |
@@ -188,3 +191,6 @@ Die Python-Version ist abgeschlossen und archiviert: [ha-desklink](https://githu
 
 ## Lizenz
 MIT
+
+## Erstellung
+Dieses Projekt wurde unter Verwendung von KI-Unterstützung erstellt. Als Sprachmodell kam **GLM-5.1** (via OpenClaw) zum Einsatz – für Codegenerierung, Debugging und Dokumentation.

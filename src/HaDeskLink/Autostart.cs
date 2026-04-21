@@ -55,12 +55,52 @@ public static class Autostart
     {
         try
         {
-            // Delete existing task first (to update if path changed)
-            RunSchtasks($"/delete /tn \"{TaskName}\" /f", ignoreError: true);
+            // Create task: run at logon, with highest privileges, no UAC prompt, high priority
+            // Step 1: Create basic task
+            RunSchtasks($"/create /tn \"{TaskName}\" /tr \"\\\"{exePath}\\\"\" " +
+                $"/sc onlogon /rl highest /f", ignoreError: false);
 
-            // Create task: run at logon, with highest privileges, no UAC prompt
-            var result = RunSchtasks($"/create /tn \"{TaskName}\" /tr \"\\\"{exePath}\\\"\" " +
-                $"/sc onlogon /rl highest /f");
+            // Step 2: Set priority to High via XML config for fastest possible startup
+            var xml = $@"<?xml version=""1.0"" encoding=""UTF-16""?>
+<Task version=""1.2"" xmlns=""http://schemas.microsoft.com/windows/2004/02/mit/task"">
+  <RegistrationInfo>
+    <Description>HA DeskLink - Home Assistant Companion</Description>
+  </RegistrationInfo>
+  <Triggers>
+    <LogonTrigger>
+      <Enabled>true</Enabled>
+    </LogonTrigger>
+  </Triggers>
+  <Principals>
+    <Principal id=""Author"">
+      <LogonType>InteractiveToken</LogonType>
+      <RunLevel>HighestAvailable</RunLevel>
+    </Principal>
+  </Principals>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <AllowHardTerminate>true</AllowHardTerminate>
+    <StartWhenAvailable>true</StartWhenAvailable>
+    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+    <AllowStartOnDemand>true</AllowStartOnDemand>
+    <Enabled>true</Enabled>
+    <Hidden>false</Hidden>
+    <Priority>2</Priority>
+  </Settings>
+  <Actions>
+    <Exec>
+      <Command>""{exePath}""</Command>
+    </Exec>
+  </Actions>
+</Task>";
+
+            // Write XML to temp file and import
+            var tempXml = Path.Combine(Path.GetTempPath(), "HA_DeskLink_task.xml");
+            File.WriteAllText(tempXml, xml);
+            var result = RunSchtasks($"/create /tn \"{TaskName}\" /xml \"{tempXml}\" /f", ignoreError: false);
+            try { File.Delete(tempXml); } catch { }
 
             return result;
         }
