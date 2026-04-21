@@ -21,7 +21,6 @@ public class HaApiClient
     private string _deviceId = "";
     private string _token = "";
     private readonly string _configDir;
-    private bool _isReconnect;
 
     private string WebhookUrl => string.IsNullOrEmpty(_cloudUrl)
         ? $"{_haUrl}/api/webhook/{_webhookId}"

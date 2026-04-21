@@ -420,7 +420,7 @@ public class SensorManager : IDisposable
         }
 
         // GPU fan
-        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.GpuNvidia || h.HardwareType == HardwareType.GpuAti || h.HardwareType == HardwareType.GpuIntel);
+        var gpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.GpuNvidia || h.HardwareType == HardwareType.GpuAmd || h.HardwareType == HardwareType.GpuIntel);
         if (gpu != null)
         {
             foreach (var sensor in gpu.Sensors)

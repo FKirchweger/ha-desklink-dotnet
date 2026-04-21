@@ -16,7 +16,7 @@ public class DeskLinkApp
     private readonly HaApiClient _api;
     private SensorManager? _sensors;
     private WebhookServer? _webhookServer;
-    private readonly Dictionary<string, string> _lastSensorStates = new();
+    private readonly Dictionary<string, object> _lastSensorStates = new();
     private readonly CancellationTokenSource _cts = new();
     private NotifyIcon? _trayIcon;
 
@@ -129,7 +129,7 @@ public class DeskLinkApp
                 foreach (var s in allSensors)
                 {
                     var key = s.UniqueId;
-                    if (!_lastSensorStates.TryGetValue(key, out var lastState) || lastState != s.State)
+                    if (!_lastSensorStates.TryGetValue(key, out var lastState) || !Equals(lastState, s.State))
                     {
                         changed.Add(s);
                         _lastSensorStates[key] = s.State;
