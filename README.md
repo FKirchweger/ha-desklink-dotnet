@@ -23,7 +23,7 @@ Geschrieben in **C# / .NET 8** mit LibreHardwareMonitorLib für echte Hardware-S
 
 ## Installation
 1. Neueste `HA_DeskLink_Setup_x.x.x.exe` von [Releases](https://github.com/FKirchweger/ha-desklink-dotnet/releases/latest) herunterladen
-2. Installer ausführen (Installationsordner wählbar)
+2. Installer ausführen – ⚠️ **Admin-Rechte erforderlich!** Der Installer fragt automatisch nach erhöhten Rechten (UAC-Dialog). Ohne Admin-Rechte kommt es zu einer Fehlermeldung.
 3. HA URL + Long-Lived Token eingeben
 4. Fertig! 🎉
 
