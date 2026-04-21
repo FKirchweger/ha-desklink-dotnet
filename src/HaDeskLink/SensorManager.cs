@@ -39,6 +39,13 @@ public class SensorManager : IDisposable
         try { _computer.Accept(new UpdateVisitor()); }
         catch { }
 
+        // Force update all hardware for fresh sensor readings
+        foreach (IHardware hardware in _computer.Hardware)
+        {
+            try { hardware.Update(); }
+            catch { }
+        }
+
         sensors.AddRange(GetCpuSensors());
         sensors.AddRange(GetGpuSensors());
         sensors.AddRange(GetMemorySensors());
@@ -89,9 +96,12 @@ public class SensorManager : IDisposable
                     icon: "mdi:cpu-64-bit", stateClass: "measurement"));
             }
             else if (sensor.SensorType == SensorType.Temperature &&
-                     (sensor.Name.Contains("Core") || sensor.Name.Contains("Package")))
+                     sensor.Name.Contains("Core"))
             {
-                result.Add(new SensorData("cpu_temperature", "CPU Temperature",
+                // Only use Core temps (not Package/TCTL which reads high on AMD)
+                if (!result.Any(s => s.UniqueId == "cpu_temperature"))
+                {
+                    result.Add(new SensorData("cpu_temperature", "CPU Temperature",
                     Math.Round(sensor.Value.Value, 1), "\u00b0C",
                     icon: "mdi:thermometer", stateClass: "measurement"));
             }
@@ -216,7 +226,7 @@ public class SensorManager : IDisposable
                 "SELECT EstimatedChargeRemaining FROM Win32_Battery");
             foreach (var obj in searcher.Get())
             {
-                var pct = Convert.ToDouble(obj["EstimatedChargeRemaining"]);
+                var pct = Math.Round(Convert.ToDouble(obj["EstimatedChargeRemaining"]), 0);
                 return new SensorData("battery", "Battery", pct, "%",
                     deviceClass: "battery", icon: "mdi:battery", stateClass: "measurement");
             }
