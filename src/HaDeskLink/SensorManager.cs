@@ -102,8 +102,9 @@ public class SensorManager : IDisposable
                 if (!result.Any(s => s.UniqueId == "cpu_temperature"))
                 {
                     result.Add(new SensorData("cpu_temperature", "CPU Temperature",
-                    Math.Round(sensor.Value.Value, 1), "\u00b0C",
-                    icon: "mdi:thermometer", stateClass: "measurement"));
+                        Math.Round(sensor.Value.Value, 1), "\u00b0C",
+                        icon: "mdi:thermometer", stateClass: "measurement"));
+                }
             }
         }
         return result;
