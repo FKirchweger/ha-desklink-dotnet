@@ -192,5 +192,8 @@ Die Python-Version ist abgeschlossen und archiviert: [ha-desklink](https://githu
 ## Lizenz
 MIT
 
+## macOS-Version
+Aktuell gibt es keine macOS-Version von HA DeskLink. Mir fehlt leider die Mac-Hardware zum Testen. Wenn du einen Mac hast und mithelfen möchtest, siehe [Issue #1 im Linux-Repo](https://github.com/TechFlipsi/ha-desklink-linux/issues/1).
+
 ## Erstellung
 Dieses Projekt wurde unter Verwendung von KI-Unterstützung erstellt. Als Sprachmodell kam **GLM-5.1** (via OpenClaw) zum Einsatz – für Codegenerierung, Debugging und Dokumentation.
