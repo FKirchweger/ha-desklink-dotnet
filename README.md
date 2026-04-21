@@ -2,8 +2,6 @@
 
 **Windows Companion App für Home Assistant** – nativ, schnell, zuverlässig.
 
-> ⚠️ **Pre-Release / Beta:** Die v2.x-Versionen sind noch Vorab-Versionen und können Fehler enthalten. Funktionen werden noch getestet – Feedback und Bug-Reports sind willkommen! Wer gerne testet, kann die aktuelle Version gerne herunterladen und ausprobieren.
-
 Geschrieben in **C# / .NET 8** mit LibreHardwareMonitorLib für echte Hardware-Sensoren.
 
 ## Features
