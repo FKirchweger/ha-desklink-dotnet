@@ -1,0 +1,80 @@
+# Changelog
+
+Alle nennenswerten Änderungen an diesem Projekt werden hier dokumentiert.
+
+## [v2.1.1] - 2026-04-22
+- Task Scheduler Autostart mit hoher Priorität, keine Verzögerung, läuft auch im Akkubetrieb
+- Discord-Community-Link im Tray-Menü
+- Lizenz auf GPL v3 geändert (Closed-Source-Nutzung nicht mehr erlaubt)
+- CREDITS.md hinzugefügt (KI-Attribution)
+- Englische README hinzugefügt (Deutsch = Original)
+- macOS-Hinweis: Keine Mac-Hardware zum Testen verfügbar
+
+## [v2.1.0] - 2026-04-21
+- Task Scheduler für Autostart (höchste Privilegien, kein UAC-Prompt)
+- requireAdministrator-Manifest für automatische Admin-Rechte
+- Regelmäßige Update-Prüfung alle 2 Stunden
+- CPU-Temperatur: Nur Core-Sensoren (nicht Package/TCTL – zu hohe Werte auf AMD)
+- GPU-Sensoren: Alle GPU-Hardware durchlaufen, GPU-Lüfter hinzugefügt, SuperIO-Controller aktiviert
+
+## [v2.0.9] - 2026-04-21
+- CPU-Temperatur-Fix: Nur Core-Sensoren verwendet (Package/TCTL auf AMD zu hoch)
+- Hardware-Update erzwungen für frische Sensor-Werte
+- Akkustand auf ganze Prozent gerundet
+
+## [v2.0.8] - 2026-04-21
+- Lüfter-Drehzahlen (CPU, GPU, Mainboard) als Sensoren hinzugefügt
+- Downgrade-Schutz: Nur Upgrades erlaubt
+- Nur-Änderungs-Updates für Sensoren (reduziert HA-Traffic)
+- Persistente Geräte-ID mit Reset-Button
+
+## [v2.0.7] - 2026-04-20
+- WebSocket Push-Notifications korrigiert (Auth, Auto-Reconnect, SSL-Bypass für selbstsignierte Zertifikate)
+- Toast-Benachrichtigung bei WebSocket-Verbindung
+- Auto-Update: Nur Upgrades, kein Downgrade mehr
+- Pre-Release-Warnung entfernt – v2.0.7 ist stabil
+
+## [v2.0.6] - 2026-04-20
+- WebSocket-basierte Push-Notifications (kein lokaler IP-Port nötig)
+- Update-Kanal-Wähler (stable/pre-release)
+- Auto-Updater lädt herunter und installiert automatisch
+- Admin-Only-Installer
+
+## [v2.0.5] - 2026-04-20
+- Weitere Sensoren: CPU-Takt, WiFi-SSID+Signal, Prozessanzahl, Auslagerungsdatei, aktives Fenster, Netzwerk-Upload/Download
+
+## [v2.0.4] - 2026-04-19
+- PC-Befehle über HA-Benachrichtigungen (keine extra HA-Konfiguration nötig)
+- Lautstärke-Steuerung (mute/lauter/leiser)
+- Monitor an/aus
+- Screenshot-Befehl
+- IP-Adresse und Online/Offline-Sensor
+- Detaillierte README mit Befehls-Referenz
+
+## [v2.0.3] - 2026-04-19
+- WebView2-Datenverzeichnis-Fehler behoben
+- HA-Benachrichtigungen auf PC empfangbar
+- Webhook-Server für Befehle und Benachrichtigungen
+
+## [v2.0.2] - 2026-04-19
+- Inno-Setup-Installer-Fix (hardcoded Version)
+
+## [v2.0.1] - 2026-04-19
+- Proper Inno Setup Installer (Program Files, Startmenü, Desktop-Verknüpfung, Deinstaller)
+- WebView2 Auto-Install-Prompt
+- Startmenü-Verknüpfung bei Autostart
+- Globaler Exception-Handler + LibreHardwareMonitor-Fallback
+- Icon für App, Tray und Installer
+
+## [v2.0.0] - 2026-04-18
+- Kompletter Rewrite von Python auf C# / .NET 8
+- LibreHardwareMonitorLib für echte CPU/GPU-Temperaturen
+- WebView2-Dashboard (eingebettetes HA-Dashboard)
+- System Tray mit Status und Steuerung
+- Sensoren: CPU, RAM, Laufwerke, Akku, Uptime
+- Autostart-Funktion
+- Setup-Wizard für HA-URL und Token
+
+---
+
+Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/).
