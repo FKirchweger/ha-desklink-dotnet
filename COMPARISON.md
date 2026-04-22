@@ -31,12 +31,12 @@ HASS.Agent ist ein großartiges Projekt – aber es erfordert **MQTT** und eine 
 | **WiFi-SSID** | ✅ | ✅ | |
 | **Uptime** | ✅ | ✅ | |
 | **Aktives Fenster** | ✅ | ✅ (Win) | Linux/macOS: begrenzt |
-| **Webcam-Status** | ❌ | ✅ | v3.0+: Sensor ob Kamera aktiv |
+| **Webcam-Status** | ❌ | ✅ | v3.0+: Sensor ob Kamera aktiv (nur Linux/macOS, auf Windows entfernt) |
 | **Befehle von HA** | ✅ | ✅ | Shutdown, Restart, Lock, etc. |
 | **Screenshot** | ✅ (Snipping Tool) | ✅ (Echt + Upload) | Direkt als HA-Event |
 | **Benachrichtigungen** | ✅ | ✅ | |
 | **Actionable Notifications** | ✅ | ✅ | v3.0+: Buttons in Notifications |
-| **Quick Actions** | ✅ | ✅ | v3.0+: Hotkey + Popup |
+| **Quick Actions** | ✅ | ✅ | v3.0+: 3 konfigurierbare Hotkeys (QA/Dashboard/Einstellungen) auf Windows, Button auf Linux/Mac |
 | **Media Player** | ✅ | ❌ | Nicht geplant – WebSocket-only |
 | **Dashboard eingebettet** | ✅ (WebView) | ✅ (Win: WebView2) | Linux/Mac: Browser |
 | **Auto-Update** | ✅ | ✅ | |
@@ -98,12 +98,12 @@ HASS.Agent is a great project – but it requires **MQTT** and a **separate inte
 | **WiFi SSID** | ✅ | ✅ | |
 | **Uptime** | ✅ | ✅ | |
 | **Active Window** | ✅ | ✅ (Win) | Linux/macOS: limited |
-| **Webcam Status** | ❌ | ✅ | v3.0+: sensor if camera is active |
+| **Webcam Status** | ❌ | ✅ | v3.0+: sensor if camera is active (Linux/macOS only, removed on Windows) |
 | **Commands from HA** | ✅ | ✅ | Shutdown, Restart, Lock, etc. |
 | **Screenshot** | ✅ (Snipping Tool) | ✅ (Real + Upload) | Directly as HA event |
 | **Notifications** | ✅ | ✅ | |
 | **Actionable Notifications** | ✅ | ✅ | v3.0+: buttons in notifications |
-| **Quick Actions** | ✅ | ✅ | v3.0+: hotkey + popup |
+| **Quick Actions** | ✅ | ✅ | v3.0+: 3 configurable hotkeys (QA/Dashboard/Settings) on Windows, button on Linux/Mac |
 | **Media Player** | ✅ | ❌ | Not planned – WebSocket-only |
 | **Embedded Dashboard** | ✅ (WebView) | ✅ (Win: WebView2) | Linux/Mac: browser |
 | **Auto-Update** | ✅ | ✅ | |

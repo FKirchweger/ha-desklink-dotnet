@@ -148,7 +148,7 @@ Alle Sensoren erscheinen als `sensor.ha_desklink_*` in Home Assistant.
 | `gpu_load` | ✅ | ✅ | ❌ | GPU-Auslastung |
 | `fan_speed` | ✅ | ✅ | ❌ | Lüfter RPM |
 | `active_window` | ✅ | ❌ | ❌ | Aktives Fenster |
-| `webcam_active` | ✅ | ✅ | ✅ | Webcam aktiv on/off |
+| `webcam_active` | ❌ | ✅ | ✅ | Webcam aktiv on/off (Windows: entfernt, unzuverlässig) |
 | `brightness` | ❌ | ❌ | ✅ | Bildschirmhelligkeit % |
 | `keyboard_backlight` | ❌ | ❌ | ✅ | Tastaturbeleuchtung % |
 | `battery_cycle_count` | ❌ | ❌ | ✅ | Akku-Ladezyklen |
@@ -234,6 +234,10 @@ Ab v3.0: **HA-Entities per Hotkey/Button umschalten**.
 
 **Konfiguration:**
 - **Windows:** Einstellungen → Quick Actions → Entity-IDs hinzufügen
+  - Quick Actions Hotkey: Std. Ctrl+Shift+H
+  - Dashboard Hotkey: Std. Ctrl+Shift+D
+  - Einstellungen Hotkey: Std. Ctrl+Shift+S
+  - Alle Hotkeys konfigurierbar (Modifier + Taste)
 - **Linux/macOS:** `config.json` → `QuickActions`-Feld:
 ```json
 {"QuickActions": "[{\"entityId\":\"light.wohnzimmer\",\"name\":\"Wohnzimmer\"}]"}
@@ -241,7 +245,7 @@ Ab v3.0: **HA-Entities per Hotkey/Button umschalten**.
 
 | Plattform | Aufruf |
 |---|---|
-| Windows | `Ctrl+Shift+H` oder Tray-Icon |
+| Windows | Konfigurierbar (Std: Ctrl+Shift+H/QA, Ctrl+Shift+D/Dashboard, Ctrl+Shift+S/Einstellungen) oder Tray-Icon |
 | Linux | Dashboard-Button ⚡ |
 | macOS | Dashboard-Button ⚡ |
 
@@ -268,6 +272,8 @@ Beim Klick wird `homeassistant.toggle` an HA gesendet.
 
 Sensor `sensor.ha_desklink_webcam_active` – `on` wenn Kamera aktiv, `off` wenn nicht.
 
+> ⚠️ **Windows:** Dieser Sensor wurde in v3.0.4 entfernt, da WMI die Webcam-Erkennung nicht zuverlässig unterstützt. Nur auf Linux und macOS verfügbar.
+
 | Plattform | Erkennung |
 |---|---|
 | Windows | WMI Win32_PnPEntity Camera |
@@ -280,7 +286,7 @@ Sensor `sensor.ha_desklink_webcam_active` – `on` wenn Kamera aktiv, `off` wenn
 
 | Plattform | Methode |
 |---|---|
-| Windows | Tray-Icon → Rechtsklick → Einstellungen |
+| Windows | Tray-Icon → Rechtsklick → Einstellungen (oder Ctrl+Shift+S) |
 | Linux | Dashboard → ⚙️ Einrichtung oder config.json |
 | macOS | Dashboard → ⚙️ Einrichtung |
 
@@ -290,7 +296,7 @@ Sensor `sensor.ha_desklink_webcam_active` – `on` wenn Kamera aktiv, `off` wenn
 
 | Plattform | Verhalten |
 |---|---|
-| Windows | Minimiert zum System Tray. Hotkey Ctrl+Shift+H. |
+| Windows | Minimiert zum System Tray. Konfigurierbare Hotkeys (Std: Ctrl+Shift+H/QA, Ctrl+Shift+D/Dashboard, Ctrl+Shift+S/Einstellungen). |
 | Linux | systemd-Daemon. Dashboard optional. |
 | macOS | Reguläre App. Dashboard im Browser. |
 
@@ -351,7 +357,7 @@ Oder alternativ:
 | **GUI** | WinForms | Avalonia | Avalonia | |
 | **Embedded Dashboard** | ✅ WebView2 | ❌ Browser | ❌ Browser | WebView2 nicht stabil auf Linux/Mac |
 | **System Tray** | ✅ | ❌ Daemon | ❌ Dock | |
-| **Quick Actions Hotkey** | ✅ Ctrl+Shift+H | ❌ Button | ❌ Button | Globale Hotkeys nur auf Windows |
+| **Quick Actions Hotkey** | ✅ Konfigurierbar | ❌ Button | ❌ Button | Std: Ctrl+Shift+H/QA, Ctrl+Shift+D/Dashboard, Ctrl+Shift+S/Einstellungen |
 | **Screenshot-Methode** | CopyFromScreen | gnome-screenshot | screencapture | |
 | **Webcam-Erkennung** | WMI | /dev/video* | ioreg/lsof | |
 | **Token-Speicher** | DPAPI | config.json | Keychain | |
@@ -514,7 +520,7 @@ All sensors appear as `sensor.ha_desklink_*` in Home Assistant.
 | `gpu_load` | ✅ | ✅ | ❌ | GPU usage |
 | `fan_speed` | ✅ | ✅ | ❌ | Fan RPM |
 | `active_window` | ✅ | ❌ | ❌ | Active window title |
-| `webcam_active` | ✅ | ✅ | ✅ | Webcam active on/off |
+| `webcam_active` | ❌ | ✅ | ✅ | Webcam active on/off (Windows: removed, unreliable) |
 | `brightness` | ❌ | ❌ | ✅ | Display brightness % |
 | `keyboard_backlight` | ❌ | ❌ | ✅ | Keyboard backlight % |
 | `battery_cycle_count` | ❌ | ❌ | ✅ | Battery cycle count |
@@ -606,6 +612,10 @@ Since v3.0: **Toggle HA entities via hotkey/button**.
 
 **Configuration:**
 - **Windows:** Settings → Quick Actions → Add entity IDs
+  - Quick Actions Hotkey: Default Ctrl+Shift+H
+  - Dashboard Hotkey: Default Ctrl+Shift+D
+  - Settings Hotkey: Default Ctrl+Shift+S
+  - All hotkeys configurable (modifier + key)
 - **Linux/macOS:** `config.json` → `QuickActions` field:
 ```json
 {"QuickActions": "[{\"entityId\":\"light.living_room\",\"name\":\"Living Room\"}]"}
@@ -613,7 +623,7 @@ Since v3.0: **Toggle HA entities via hotkey/button**.
 
 | Platform | Trigger |
 |---|---|
-| Windows | `Ctrl+Shift+H` or Tray icon |
+| Windows | Configurable (default: Ctrl+Shift+H/QA, Ctrl+Shift+D/Dashboard, Ctrl+Shift+S/Settings) or Tray icon |
 | Linux | Dashboard button ⚡ |
 | macOS | Dashboard button ⚡ |
 
@@ -644,6 +654,8 @@ Clicking sends `homeassistant.toggle` to HA.
 
 Sensor `sensor.ha_desklink_webcam_active` – `on` when camera is active, `off` when not.
 
+> ⚠️ **Windows:** This sensor was removed in v3.0.4 because WMI cannot reliably detect webcam in use. Only available on Linux and macOS.
+
 | Platform | Detection |
 |---|---|
 | Windows | WMI Win32_PnPEntity Camera |
@@ -658,7 +670,7 @@ Sensor `sensor.ha_desklink_webcam_active` – `on` when camera is active, `off` 
 
 | Platform | Method |
 |---|---|
-| Windows | Tray icon → Right-click → Settings |
+| Windows | Tray icon → Right-click → Settings (or Ctrl+Shift+S) |
 | Linux | Dashboard → ⚙️ Setup or config.json |
 | macOS | Dashboard → ⚙️ Setup |
 
@@ -670,7 +682,7 @@ Sensor `sensor.ha_desklink_webcam_active` – `on` when camera is active, `off` 
 
 | Platform | Behavior |
 |---|---|
-| Windows | Minimized to system tray. Hotkey Ctrl+Shift+H. |
+| Windows | Minimized to system tray. Configurable hotkeys (default: Ctrl+Shift+H/QA, Ctrl+Shift+D/Dashboard, Ctrl+Shift+S/Settings). |
 | Linux | systemd daemon. Dashboard optional. |
 | macOS | Regular app. Dashboard in browser. |
 
@@ -740,7 +752,7 @@ Or alternatively:
 | **GUI** | WinForms | Avalonia | Avalonia | |
 | **Embedded Dashboard** | ✅ WebView2 | ❌ Browser | ❌ Browser | WebView2 not stable on Linux/Mac |
 | **System Tray** | ✅ | ❌ Daemon | ❌ Dock | |
-| **Quick Actions Hotkey** | ✅ Ctrl+Shift+H | ❌ Button | ❌ Button | Global hotkeys Win only |
+| **Quick Actions Hotkey** | ✅ Configurable | ❌ Button | ❌ Button | Default: Ctrl+Shift+H/QA, Ctrl+Shift+D/Dashboard, Ctrl+Shift+S/Settings |
 | **Screenshot Method** | CopyFromScreen | gnome-screenshot | screencapture | |
 | **Webcam Detection** | WMI | /dev/video* | ioreg/lsof | |
 | **Token Storage** | DPAPI | config.json | Keychain | |

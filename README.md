@@ -21,9 +21,12 @@ Geschrieben in **C# / .NET 8** mit LibreHardwareMonitorLib für echte Hardware-S
 - ⚡ **PC-Befehle aus HA** – Shutdown, Restart, Hibernate, Lock, und mehr per Benachrichtigung
 - 📬 **Benachrichtigungen** – HA sendet Toast-Notifications an den PC
 - 🔔 **Actionable Notifications** – Benachrichtigungen mit Aktions-Buttons
-- ⚡ **Quick Actions** – Globaler Hotkey (Ctrl+Shift+H) für HA-Entity-Toggles
+- ⚡ **Quick Actions** – Konfigurierbare Hotkeys für Entity-Toggles (Quick Actions: Ctrl+Shift+H, Dashboard: Ctrl+Shift+D, Einstellungen: Ctrl+Shift+S)
 - 📸 **Screenshot** – Echtes Bildschirmfoto + Upload als HA-Event
-- 📷 **Webcam-Sensor** – Zeigt ob Webcam aktiv ist (on/off)
+- 📷 **Webcam-Sensor** – Zeigt ob Webcam aktiv ist (nur Linux/macOS, auf Windows entfernt)
+- ⚙️ **Einstellungen** – Komplett neu gestaltet: GroupBoxes, Entity-Dropdown, JSON-Editor
+- 🎨 **Dark Mode** – Automatisch (System), Hell oder Dunkel wählbar
+- 🌐 **6 Sprachen** – Deutsch, Englisch, Spanisch, Französisch, Chinesisch, Japanisch
 - 🔌 **mobile_app Protokoll** – identisch zur Handy-App, keine Extra-Konfiguration in HA nötig
 - 🔄 **Auto-Update** von GitHub Releases
 - 📌 **System Tray** – läuft minimiert im Hintergrund
