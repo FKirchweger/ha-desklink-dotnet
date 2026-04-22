@@ -634,7 +634,7 @@ public class SensorManager : IDisposable
             var style = GetWindowLong(hwnd, GWL_STYLE);
             var isBorderless = (style & (WS_CAPTION | WS_THICKFRAME)) == 0 && !string.IsNullOrWhiteSpace(title);
 
-            var fullscreen = (isFullscreen && isBorderless) || (isFullscreen && windowRect.Width >= (screen.Right - screen.Left));
+            var fullscreen = (isFullscreen && isBorderless) || (isFullscreen && (windowRect.Right - windowRect.Left) >= (screen.Right - screen.Left));
 
             var appName = fullscreen ? (string.IsNullOrWhiteSpace(title) ? className : title) : "none";
             var state = fullscreen ? "on" : "off";
