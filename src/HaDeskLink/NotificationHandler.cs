@@ -13,18 +13,15 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace HaDeskLink;
 
 /// <summary>
 /// Handles notifications and commands from Home Assistant.
-/// Supports actionable notifications with buttons via Windows Toast.
+/// Uses WinForms BalloonTip + dialog with action buttons.
 /// </summary>
 public static class NotificationHandler
 {
-    private static bool _toastActivatedRegistered = false;
-
     public static bool TryHandleNotification(string jsonBody, NotifyIcon? trayIcon)
     {
         try
@@ -104,46 +101,13 @@ public static class NotificationHandler
         }
     }
 
+    /// <summary>
+    /// Show notification with action buttons using BalloonTip + WinForms dialog.
+    /// </summary>
     public static void ShowActionableNotification(string title, string message,
         List<NotificationAction> actions, string? commandOnAction, NotifyIcon? trayIcon)
     {
-        try
-        {
-            var builder = new ToastContentBuilder()
-                .AddText(title)
-                .AddText(message);
-
-            foreach (var action in actions)
-            {
-                builder.AddButton(new ToastButton()
-                    .SetContent(action.Title)
-                    .AddArgument("action", action.ActionKey)
-                    .AddArgument("command", action.Command ?? commandOnAction ?? ""));
-            }
-
-            // Register activation handler once
-            if (!_toastActivatedRegistered)
-            {
-                ToastNotificationManagerCompat.OnActivated += args =>
-                {
-                    if (args.Arguments.TryGetValue("command", out var cmd) && !string.IsNullOrEmpty(cmd))
-                    {
-                        try { CommandHandler.Execute(cmd); }
-                        catch { }
-                    }
-                };
-                _toastActivatedRegistered = true;
-            }
-
-            builder.Show();
-            return;
-        }
-        catch
-        {
-            // Fallback to WinForms dialog
-        }
-
-        // Fallback: show balloon tip + dialog with action buttons
+        // Show balloon tip for quick awareness
         if (trayIcon != null)
         {
             trayIcon.BalloonTipTitle = title;
@@ -152,10 +116,11 @@ public static class NotificationHandler
             trayIcon.ShowBalloonTip(5000);
         }
 
-        using var form = new Form
+        // Show dialog with action buttons
+        var form = new Form
         {
             Text = title,
-            Size = new System.Drawing.Size(400, 200),
+            Size = new System.Drawing.Size(420, 220),
             StartPosition = FormStartPosition.CenterScreen,
             FormBorderStyle = FormBorderStyle.FixedDialog,
             MaximizeBox = false,
@@ -163,13 +128,13 @@ public static class NotificationHandler
             TopMost = true
         };
 
-        var lbl = new Label { Text = message, Dock = DockStyle.Top, Height = 60, TextAlign = System.Drawing.ContentAlignment.MiddleLeft };
+        var lbl = new Label { Text = message, Dock = DockStyle.Top, Height = 80, TextAlign = System.Drawing.ContentAlignment.MiddleLeft };
         form.Controls.Add(lbl);
 
-        var btnPanel = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 50, FlowDirection = FlowDirection.LeftToRight };
+        var btnPanel = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 60, FlowDirection = FlowDirection.LeftToRight };
         foreach (var action in actions)
         {
-            var btn = new Button { Text = action.Title, Width = 120, Height = 35, Tag = action };
+            var btn = new Button { Text = action.Title, Width = 120, Height = 40, Tag = action };
             btn.Click += (s, e) =>
             {
                 var a = (NotificationAction)((Button)s!).Tag!;
@@ -187,7 +152,7 @@ public static class NotificationHandler
             };
             btnPanel.Controls.Add(btn);
         }
-        var dismissBtn = new Button { Text = "✕", Width = 50, Height = 35 };
+        var dismissBtn = new Button { Text = "✕ Schließen", Width = 100, Height = 40 };
         dismissBtn.Click += (s, e) => form.Close();
         btnPanel.Controls.Add(dismissBtn);
 
@@ -195,6 +160,9 @@ public static class NotificationHandler
         form.Show();
     }
 
+    /// <summary>
+    /// Called from HaWebSocketClient when a push notification event has actions.
+    /// </summary>
     public static void ShowWebSocketNotification(string title, string message,
         List<NotificationAction>? actions, string? commandOnAction, NotifyIcon? trayIcon)
     {
