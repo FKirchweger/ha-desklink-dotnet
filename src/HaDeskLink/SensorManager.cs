@@ -732,4 +732,3 @@ public class UpdateVisitor : IVisitor
     public void VisitSensor(ISensor sensor) { }
     public void VisitParameter(IParameter parameter) { }
 }
-}
