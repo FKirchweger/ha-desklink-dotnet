@@ -1,106 +1,108 @@
 # HA DeskLink v2.0
 
-**Windows Companion App für Home Assistant** – nativ, schnell, zuverlässig.
+**Windows Companion App for Home Assistant** – native, fast, reliable.
 
-Geschrieben in **C# / .NET 8** mit LibreHardwareMonitorLib für echte Hardware-Sensoren.
+Written in **C# / .NET 8** with LibreHardwareMonitorLib for real hardware sensors.
+
+> 🇩🇪 [Deutsche Version (Original)](README_DE.md)
 
 ## Features
-- 🌡️ **CPU & GPU Temperatur** – echte Werte dank LibreHardwareMonitorLib
-- 📊 **Alle Sensoren** – CPU, RAM, alle Laufwerke (C:, D:, etc.), Battery, Uptime
-- 🖥️ **Eingebettetes Dashboard** – WebView2 (mit Auto-Install falls fehlend)
-- ⚡ **PC-Befehle aus HA** – Shutdown, Restart, Hibernate, Lock, und mehr per Benachrichtigung
-- 📬 **Benachrichtigungen** – HA sendet Toast-Notifications an den PC
-- 🔌 **mobile_app Protokoll** – identisch zur Handy-App, keine Extra-Konfiguration in HA nötig
-- 🔄 **Auto-Update** von GitHub Releases
-- 📌 **System Tray** – läuft minimiert im Hintergrund
-- 🛡️ **Admin-Rechte** – automatisch angefordert für CPU/GPU-Temperatur
+- 🌡️ **CPU & GPU Temperature** – real values thanks to LibreHardwareMonitorLib
+- 📊 **All Sensors** – CPU, RAM, all drives (C:, D:, etc.), Battery, Uptime
+- 🖥️ **Embedded Dashboard** – WebView2 (with auto-install if missing)
+- ⚡ **PC Commands from HA** – Shutdown, Restart, Hibernate, Lock, and more via notifications
+- 📬 **Notifications** – HA sends toast notifications to your PC
+- 🔌 **mobile_app Protocol** – identical to the mobile app, no extra HA configuration needed
+- 🔄 **Auto-Update** from GitHub Releases
+- 📌 **System Tray** – runs minimized in the background
+- 🛡️ **Admin Rights** – automatically requested for CPU/GPU temperature
 
-## Systemanforderungen
+## System Requirements
 - Windows 10/11 (x64)
-- Kein .NET Runtime nötig – alles im Installer enthalten
+- No .NET Runtime required – everything included in the installer
 
 ## Installation
-1. Neueste `HA_DeskLink_Setup_x.x.x.exe` von [Releases](https://github.com/FKirchweger/ha-desklink-dotnet/releases/latest) herunterladen
-2. Die `HA_DeskLink_Setup_x.x.x.exe` herunterladen, dann im Download-Ordner **Rechtsklick → „Als Administrator ausführen“** wählen. ⚠️ Ein normaler Doppelklick oder das Warten auf die UAC-Anfrage führt zu einer Fehlermeldung – bitte direkt per Rechtsklick als Administrator starten.
-3. HA URL + Long-Lived Token eingeben
-4. Fertig! 🎉
+1. Download the latest `HA_DeskLink_Setup_x.x.x.exe` from [Releases](https://github.com/FKirchweger/ha-desklink-dotnet/releases/latest)
+2. **Right-click → "Run as Administrator"** ⚠️ A normal double-click or waiting for UAC will cause an error – please start directly via right-click as administrator.
+3. Enter HA URL + Long-Lived Token
+4. Done! 🎉
 
-## PC-Befehle aus Home Assistant
+## PC Commands from Home Assistant
 
-HA DeskLink empfängt Befehle über **Benachrichtigungen** – genau wie die Handy-App. Keine Extra-Konfiguration in HA nötig!
+HA DeskLink receives commands via **notifications** – just like the mobile app. No extra HA configuration needed!
 
-### Alle verfügbaren Befehle
+### All Available Commands
 
-| Befehl | Schreibweise | Wirkung |
+| Command | Value | Effect |
 |---|---|---|
-| Herunterfahren | `shutdown` | Fährt den PC in 30 Sekunden herunter |
-| Neustarten | `restart` | Startet den PC in 30 Sekunden neu |
-| Ruhezustand | `hibernate` | Versetzt den PC in den Ruhezustand |
-| PC sperren | `lock` | Sperrt den Windows-Bildschirm |
-| Lautstärke stumm | `mute` | Schaltet den Ton stumm |
-| Lautstärke lauter | `volume_up` | Erhöht die Lautstärke um 10% |
-| Lautstärke leiser | `volume_down` | Verringert die Lautstärke um 10% |
-| Monitor an | `monitor_on` | Schaltet den Monitor an (wenn aus) |
-| Monitor aus | `monitor_off` | Schaltet den Monitor aus |
-| Bildschirmfoto | `screenshot` | Macht einen Screenshot |
-| Nachricht | *(kein command)* | Zeigt nur eine Benachrichtigung an |
+| Shutdown | `shutdown` | Shuts down the PC in 30 seconds |
+| Restart | `restart` | Restarts the PC in 30 seconds |
+| Hibernate | `hibernate` | Puts the PC into hibernation |
+| Lock PC | `lock` | Locks the Windows screen |
+| Mute | `mute` | Mutes the audio |
+| Volume Up | `volume_up` | Increases volume by 10% |
+| Volume Down | `volume_down` | Decreases volume by 10% |
+| Monitor On | `monitor_on` | Turns the monitor on |
+| Monitor Off | `monitor_off` | Turns the monitor off |
+| Screenshot | `screenshot` | Takes a screenshot |
+| Message | *(no command)* | Shows a notification only |
 
-> ⚠️ `mute`, `volume_up`, `volume_down`, `monitor_on`, `monitor_off` und `screenshot` sind ab v2.1.0 verfügbar!
+> ⚠️ `mute`, `volume_up`, `volume_down`, `monitor_on`, `monitor_off`, and `screenshot` are available from v2.1.0!
 
-### Beispiele
+### Examples
 
-#### Herunterfahren
+#### Shutdown
 ```yaml
 service: notify.mobile_app_ha_desklink
 data:
-  title: "PC herunterfahren"
-  message: "Der PC wird in 30 Sekunden heruntergefahren"
+  title: "Shutdown PC"
+  message: "PC will shut down in 30 seconds"
   data:
     command: "shutdown"
 ```
 
-#### Neustarten
+#### Restart
 ```yaml
 service: notify.mobile_app_ha_desklink
 data:
-  title: "PC neustarten"
-  message: "Der PC wird neu gestartet"
+  title: "Restart PC"
+  message: "PC will restart"
   data:
     command: "restart"
 ```
 
-#### Ruhezustand
+#### Hibernate
 ```yaml
 service: notify.mobile_app_ha_desklink
 data:
-  title: "Ruhezustand"
-  message: "PC geht in den Ruhezustand"
+  title: "Hibernate"
+  message: "PC going into hibernation"
   data:
     command: "hibernate"
 ```
 
-#### PC sperren
+#### Lock PC
 ```yaml
 service: notify.mobile_app_ha_desklink
 data:
-  title: "PC sperren"
-  message: "Der PC wird gesperrt"
+  title: "Lock PC"
+  message: "PC will be locked"
   data:
     command: "lock"
 ```
 
-#### Einfache Benachrichtigung (ohne Befehl)
+#### Simple Notification (no command)
 ```yaml
 service: notify.mobile_app_ha_desklink
 data:
-  title: "Erinnerung"
-  message: "Müll rausbringen nicht vergessen!"
+  title: "Reminder"
+  message: "Don't forget to take out the trash!"
 ```
 
-### Automatisierung in HA
+### Automation in HA
 ```yaml
 automation:
-  - alias: "PC um 22 Uhr herunterfahren"
+  - alias: "Shutdown PC at 10 PM"
     trigger:
       - platform: time
         at: "22:00:00"
@@ -111,65 +113,65 @@ automation:
     action:
       - service: notify.mobile_app_ha_desklink
         data:
-          title: "Gute Nacht!"
-          message: "Der PC wird jetzt heruntergefahren."
+          title: "Good night!"
+          message: "PC is shutting down now."
           data:
             command: "shutdown"
 ```
 
-### Dashboard-Button in HA
+### Dashboard Button in HA
 ```yaml
 type: button
-name: "PC herunterfahren"
+name: "Shutdown PC"
 tap_action:
   action: call-service
   service: notify.mobile_app_ha_desklink
   service_data:
-    title: "PC herunterfahren"
-    message: "Wird heruntergefahren..."
+    title: "Shutdown PC"
+    message: "Shutting down..."
     data:
       command: "shutdown"
 ```
 
-## Sensoren in Home Assistant
+## Sensors in Home Assistant
 
-HA DeskLink erstellt automatisch Sensoren in HA:
+HA DeskLink automatically creates sensors in HA:
 
-| Sensor | Beschreibung |
+| Sensor | Description |
 |---|---|
-| `sensor.ha_desklink_cpu_usage` | CPU-Auslastung in % |
-| `sensor.ha_desklink_cpu_temperature` | CPU-Temperatur in °C (braucht Admin) |
-| `sensor.ha_desklink_cpu_clock` | CPU-Taktrate in MHz |
-| `sensor.ha_desklink_gpu_load` | GPU-Auslastung in % |
-| `sensor.ha_desklink_gpu_temperature` | GPU-Temperatur in °C |
-| `sensor.ha_desklink_gpu_fan_speed` | GPU-Lüfter in RPM |
-| `sensor.ha_desklink_memory_usage` | RAM-Auslastung in % |
-| `sensor.ha_desklink_memory_used` | RAM verwendet in GB |
-| `sensor.ha_desklink_memory_free` | RAM frei in GB |
-| `sensor.ha_desklink_memory_total` | RAM gesamt in GB |
-| `sensor.ha_desklink_disk_c_usage` | Laufwerk C: Auslastung in % |
-| `sensor.ha_desklink_disk_c_free` | Laufwerk C: frei in GB |
-| `sensor.ha_desklink_disk_c_used` | Laufwerk C: verwendet in GB |
-| `sensor.ha_desklink_disk_c_total` | Laufwerk C: gesamt in GB |
-| `sensor.ha_desklink_uptime` | PC-Laufzeit in Stunden |
-| `sensor.ha_desklink_last_activity` | Letzte Maus/Tastatur-Aktivität in Minuten |
-| `sensor.ha_desklink_battery` | Akkustand in % (nur Laptops) |
-| `sensor.ha_desklink_ip_address` | Aktuelle IPv4-Adresse |
-| `binary_sensor.ha_desklink_connectivity` | Online/Offline-Status (Ping zu 8.8.8.8) |
-| `sensor.ha_desklink_process_count` | Anzahl laufende Prozesse |
-| `sensor.ha_desklink_page_file_percent` | Auslagerungsdatei-Auslastung in % |
-| `sensor.ha_desklink_wifi_ssid` | Verbundenes WiFi-Netzwerk (Name) |
-| `sensor.ha_desklink_wifi_signal` | WiFi-Signalstärke in % |
-| `sensor.ha_desklink_active_window` | Aktives Fenster/Titel |
-| `sensor.ha_desklink_network_upload` | Upload-Geschwindigkeit in KB/s |
-| `sensor.ha_desklink_network_download` | Download-Geschwindigkeit in KB/s |
-| `sensor.ha_desklink_fan_*` | Lüfter-Drehzahlen in RPM (CPU, GPU, Mainboard) |
+| `sensor.ha_desklink_cpu_usage` | CPU usage in % |
+| `sensor.ha_desklink_cpu_temperature` | CPU temperature in °C (requires Admin) |
+| `sensor.ha_desklink_cpu_clock` | CPU clock speed in MHz |
+| `sensor.ha_desklink_gpu_load` | GPU usage in % |
+| `sensor.ha_desklink_gpu_temperature` | GPU temperature in °C |
+| `sensor.ha_desklink_gpu_fan_speed` | GPU fan in RPM |
+| `sensor.ha_desklink_memory_usage` | RAM usage in % |
+| `sensor.ha_desklink_memory_used` | RAM used in GB |
+| `sensor.ha_desklink_memory_free` | RAM free in GB |
+| `sensor.ha_desklink_memory_total` | RAM total in GB |
+| `sensor.ha_desklink_disk_c_usage` | Drive C: usage in % |
+| `sensor.ha_desklink_disk_c_free` | Drive C: free in GB |
+| `sensor.ha_desklink_disk_c_used` | Drive C: used in GB |
+| `sensor.ha_desklink_disk_c_total` | Drive C: total in GB |
+| `sensor.ha_desklink_uptime` | PC uptime in hours |
+| `sensor.ha_desklink_last_activity` | Last mouse/keyboard activity in minutes |
+| `sensor.ha_desklink_battery` | Battery level in % (laptops only) |
+| `sensor.ha_desklink_ip_address` | Current IPv4 address |
+| `binary_sensor.ha_desklink_connectivity` | Online/Offline status (ping to 8.8.8.8) |
+| `sensor.ha_desklink_process_count` | Number of running processes |
+| `sensor.ha_desklink_page_file_percent` | Page file usage in % |
+| `sensor.ha_desklink_wifi_ssid` | Connected WiFi network (name) |
+| `sensor.ha_desklink_wifi_signal` | WiFi signal strength in % |
+| `sensor.ha_desklink_active_window` | Active window/title |
+| `sensor.ha_desklink_network_upload` | Upload speed in KB/s |
+| `sensor.ha_desklink_network_download` | Download speed in KB/s |
+| `sensor.ha_desklink_fan_*` | Fan speeds in RPM (CPU, GPU, Motherboard) |
 
-> 💡 Weitere Laufwerke (D:, E: etc.) werden automatisch erkannt. GPU-Sensoren erscheinen nur wenn eine GPU vorhanden ist.
+> 💡 Additional drives (D:, E:, etc.) are detected automatically. GPU sensors only appear if a GPU is present.
 
 ## Dashboard
 
-Das integrierte Dashboard öffnet HA direkt in der App (WebView2). Falls WebView2 nicht installiert ist, wird automatisch angeboten es herunterzuladen. Alternativ öffnet sich HA im Standard-Browser.
+The integrated dashboard opens HA directly in the app (WebView2). If WebView2 is not installed, it automatically offers to download it. Alternatively, HA opens in the default browser.
 
 ## Build
 ```bash
@@ -177,26 +179,26 @@ dotnet publish src/HaDeskLink -c Release -r win-x64 --self-contained -o publish
 iscc installer.iss
 ```
 
-## Technologie
-| Komponente | Library |
+## Technology
+| Component | Library |
 |---|---|
-| Hardware-Sensoren | LibreHardwareMonitorLib |
+| Hardware Sensors | LibreHardwareMonitorLib |
 | Dashboard | Microsoft.Web.WebView2 |
 | UI | Windows Forms |
 | HTTP | System.Net.Http |
 | Config | System.Text.Json |
 
 ## v1.x (Python)
-Die Python-Version ist abgeschlossen und archiviert: [ha-desklink](https://github.com/FKirchweger/ha-desklink)
+The Python version is completed and archived: [ha-desklink](https://github.com/FKirchweger/ha-desklink)
 
-## Lizenz
+## License
 MIT
 
-## macOS-Version
-Aktuell gibt es keine macOS-Version von HA DeskLink. Mir fehlt leider die Mac-Hardware zum Testen. Wenn du einen Mac hast und mithelfen möchtest, siehe [Issue #1 im Linux-Repo](https://github.com/TechFlipsi/ha-desklink-linux/issues/1).
+## macOS Version
+There is currently no macOS version of HA DeskLink. Unfortunately, I don't have Mac hardware for testing. If you have a Mac and would like to help, see [Issue #1 in the Linux repo](https://github.com/TechFlipsi/ha-desklink-linux/issues/1).
 
 ## Community
-💬 [Discord](https://discord.gg/HnCZY54U7) – Fragen, Feedback, Hilfe
+💬 [Discord](https://discord.gg/HnCZY54U7) – Questions, Feedback, Help
 
-## Erstellung
-Dieses Projekt wurde unter Verwendung von KI-Unterstützung erstellt. Als Sprachmodell kam **GLM-5.1** (via OpenClaw) zum Einsatz – für Codegenerierung, Debugging und Dokumentation.
+## Attribution
+This project was created with AI assistance. All code was written and developed by **GLM-5.1** (via OpenClaw) – from architecture to implementation to debugging. This English documentation was also translated from German by AI. The German documentation is the original version.
