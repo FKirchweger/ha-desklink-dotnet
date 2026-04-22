@@ -44,6 +44,11 @@ public class Config
     /// </summary>
     public string Language { get; set; } = "de";
     /// <summary>
+    /// Quick Actions: JSON array of { entityId, name } objects.
+    /// Example: [{"entityId":"light.living_room","name":"Wohnzimmer"}]
+    /// </summary>
+    public string QuickActions { get; set; } = "[]";
+    /// <summary>
     /// Encrypted HA token (DPAPI protected). When set, HaToken is cleared.
     /// If empty, HaToken is used (migration from old config).
     /// </summary>
@@ -141,7 +146,8 @@ public class Config
             SensorInterval = SensorInterval,
             UpdateChannel = UpdateChannel,
             Language = Language,
-            HaTokenEncrypted = HaTokenEncrypted
+            HaTokenEncrypted = HaTokenEncrypted,
+            QuickActions = QuickActions
         };
 
         var json = JsonSerializer.Serialize(saveConfig, new JsonSerializerOptions { WriteIndented = true });

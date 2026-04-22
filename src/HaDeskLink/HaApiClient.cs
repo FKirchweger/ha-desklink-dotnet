@@ -202,6 +202,51 @@ public class HaApiClient
         await _http.PostAsync(WebhookUrl, new StringContent(json, Encoding.UTF8, "application/json"));
     }
 
+    public async Task ToggleEntityAsync(string entityId)
+    {
+        if (string.IsNullOrEmpty(_haUrl) || string.IsNullOrEmpty(_token))
+            throw new InvalidOperationException("Not connected to HA");
+
+        var url = $"{_haUrl}/api/services/homeassistant/toggle";
+        var payload = JsonSerializer.Serialize(new { entity_id = entityId });
+        var req = new HttpRequestMessage(HttpMethod.Post, url)
+        {
+            Content = new StringContent(payload, Encoding.UTF8, "application/json")
+        };
+        req.Headers.Add("Authorization", $"Bearer {_token}");
+        var resp = await _http.SendAsync(req);
+        resp.EnsureSuccessStatusCode();
+    }
+
+    /// <summary>
+    /// Upload a screenshot as a HA event with base64 image data.
+    /// Event type: ha_desklink_screenshot
+    /// </summary>
+    public async Task UploadScreenshotAsync(string filePath)
+    {
+        if (string.IsNullOrEmpty(_haUrl) || string.IsNullOrEmpty(_token)) return;
+        if (!File.Exists(filePath)) return;
+
+        var imageBytes = await File.ReadAllBytesAsync(filePath);
+        var base64 = Convert.ToBase64String(imageBytes);
+
+        var payload = JsonSerializer.Serialize(new
+        {
+            type = "fire_event",
+            data = new
+            {
+                event_type = "ha_desklink_screenshot",
+                event_data = new
+                {
+                    device = Environment.MachineName,
+                    image = $"data:image/png;base64,{base64}"
+                }
+            }
+        });
+
+        await _http.PostAsync(WebhookUrl, new StringContent(payload, Encoding.UTF8, "application/json"));
+    }
+
     public async Task<string?> CheckForUpdateAsync(bool includePrerelease = false)
     {
         try

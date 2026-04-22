@@ -170,6 +170,8 @@ public class HaWebSocketClient : IDisposable
                     string title = "HA DeskLink";
                     string message = "";
                     string? command = null;
+                    List<NotificationAction>? actions = null;
+                    string? commandOnAction = null;
 
                     if (eventEl.TryGetProperty("title", out var t))
                         title = t.GetString() ?? title;
@@ -183,23 +185,35 @@ public class HaWebSocketClient : IDisposable
                             title = dt.GetString() ?? title;
                         if (data.TryGetProperty("message", out var dm))
                             message = dm.GetString() ?? message;
+                        if (data.TryGetProperty("command_on_action", out var coa))
+                            commandOnAction = coa.GetString();
+                        if (data.TryGetProperty("actions", out var actionsArr))
+                        {
+                            actions = new List<NotificationAction>();
+                            foreach (var a in actionsArr.EnumerateArray())
+                            {
+                                var act = a.GetProperty("action").GetString() ?? "";
+                                var actTitle = a.TryGetProperty("title", out var at) ? at.GetString() ?? act : act;
+                                var actCommand = a.TryGetProperty("command", out var ac) ? ac.GetString() : null;
+                                actions.Add(new NotificationAction(act, actTitle, actCommand));
+                            }
+                        }
                     }
 
-                    // Execute command if present
-                    if (!string.IsNullOrEmpty(command))
+                    // Execute command if present (no action buttons)
+                    if (!string.IsNullOrEmpty(command) && actions == null)
                     {
                         try { _onCommand?.Invoke(command!); }
                         catch { }
                     }
 
-                    // Show notification if there's a message
+                    // Show notification
                     if (!string.IsNullOrEmpty(message))
                     {
-                        NotificationHandler.ShowNotification(title, message, _trayIcon);
+                        NotificationHandler.ShowWebSocketNotification(title, message, actions, commandOnAction, _trayIcon);
                     }
                     else if (!string.IsNullOrEmpty(command))
                     {
-                        // Command without message - still show what happened
                         NotificationHandler.ShowNotification("HA DeskLink", $"Befehl ausgeführt: {command}", _trayIcon);
                     }
                 }

@@ -58,6 +58,12 @@ public static class CommandHandler
             case "screenshot":
                 TakeScreenshot();
                 break;
+            case "screenshot_save":
+                TakeAndSaveScreenshot();
+                break;
+            case "snipping_tool":
+                OpenSnippingTool();
+                break;
             case "brightness_up":
                 {
                     var current = SensorManager.GetCurrentBrightness();
@@ -144,6 +150,50 @@ public static class CommandHandler
     }
 
     private static void TakeScreenshot()
+    {
+        // Save screenshot to temp and upload to HA
+        TakeAndSaveScreenshot();
+    }
+
+    /// <summary>
+    /// Take a real screenshot using Graphics.CopyFromScreen,
+    /// save as PNG, and fire HA event with base64 image data.
+    /// </summary>
+    private static void TakeAndSaveScreenshot()
+    {
+        try
+        {
+            var screen = System.Windows.Forms.Screen.PrimaryScreen;
+            if (screen == null) return;
+
+            var bounds = screen.Bounds;
+            using var bmp = new System.Drawing.Bitmap(bounds.Width, bounds.Height);
+            using var g = System.Drawing.Graphics.FromImage(bmp);
+            g.CopyFromScreen(bounds.X, bounds.Y, 0, 0, bounds.Size, System.Drawing.CopyPixelOperation.SourceCopy);
+
+            var tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "HA_DeskLink");
+            System.IO.Directory.CreateDirectory(tempPath);
+            var filePath = System.IO.Path.Combine(tempPath, $"screenshot_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+            bmp.Save(filePath, System.Drawing.Imaging.ImageFormat.Png);
+
+            // Fire event to upload to HA asynchronously
+            System.Threading.Tasks.Task.Run(async () =>
+            {
+                try
+                {
+                    var app = DeskLinkApp.Instance;
+                    if (app != null)
+                    {
+                        await app.UploadScreenshotAsync(filePath);
+                    }
+                }
+                catch { }
+            });
+        }
+        catch { }
+    }
+
+    private static void OpenSnippingTool()
     {
         // Use built-in Windows screenshot (Win+Shift+S)
         keybd_event(0x5B, 0, 0, 0); // Win down

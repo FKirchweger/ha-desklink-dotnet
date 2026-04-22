@@ -53,5 +53,14 @@
   "command_restart_msg": "HA DeskLink: PC wird neu gestartet",
   "command_unknown": "Unbekannter Befehl: {0}",
   "ws_connected": "WebSocket verbunden mit HA",
-  "ws_disconnected": "WebSocket getrennt"
+  "ws_disconnected": "WebSocket getrennt",
+  "quickactions_title": "Quick Actions",
+  "quickactions_empty": "Keine Quick Actions konfiguriert.\nIn Einstellungen hinzufügen.",
+  "quickactions_hotkey": "Hotkey: Ctrl+Shift+H",
+  "settings_quickactions": "Quick Actions:",
+  "settings_quickactions_hint": "Format: entity_id,name (pro Zeile)",
+  "settings_quickactions_example": "z.B. light.living_room,Wohnzimmer",
+  "screenshot_saved": "Screenshot gespeichert",
+  "webcam_active": "Webcam Aktiv",
+  "notification_action_executed": "Aktion ausgeführt"
 }

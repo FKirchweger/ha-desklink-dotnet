@@ -2,6 +2,13 @@
 
 Alle nennenswerten Änderungen an diesem Projekt werden hier dokumentiert.
 
+## [v3.0.0] - 2026-04-22
+- 🔔 **Actionable Notifications** – Benachrichtigungen mit Aktions-Buttons (z.B. "Ausschalten", "Ignorieren"). Unterstützt Windows Toast Notifications mit Fallback auf Dialog. HA sendet `actions`-Array in Notification-Data.
+- ⚡ **Quick Actions** – Globaler Hotkey (Ctrl+Shift+H) öffnet Popup mit HA-Entity-Toggle-Buttons. Konfigurierbar in Einstellungen (Entity-ID + Name).
+- 📸 **Screenshot-Verbesserung** – Echte Bildschirmfoto-Funktion (Graphics.CopyFromScreen), speichert PNG und sendet als HA-Event (`ha_desklink_screenshot`). Neuer Befehl `screenshot_save`, alter `screenshot` → `snipping_tool`.
+- 📷 **Webcam-Sensor** – Neuer Sensor `webcam_active` (on/off) zeigt ob eine Webcam aktiv ist.
+- 🌍 **Neue Lokalisierungs-Keys** für alle 6 Sprachen (de, en, es, fr, zh, ja)
+
 ## [v2.2.0] - 2026-04-22
 - 🖥️ **Vollbild-Sensor** – zeigt welches Programm im Vollbild läuft (`sensor.ha_desklink_fullscreen_app`) + Ja/Nein (`binary_sensor.ha_desklink_fullscreen`)
 - 📺 **Monitor-Layout-Sensor** – aktives Monitor-Layout (`sensor.ha_desklink_monitor_layout`, z.B. "1+2")

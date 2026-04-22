@@ -101,6 +101,10 @@ public class SensorManager : IDisposable
         // Network throughput
         sensors.AddRange(GetNetworkSensors());
 
+        // Webcam active sensor
+        var webcam = GetWebcamActive();
+        if (webcam != null) sensors.Add(webcam);
+
         return sensors;
     }
 
@@ -713,6 +717,34 @@ public class SensorManager : IDisposable
         }
         catch { }
         return null;
+    }
+
+    // === Webcam Active Sensor ===
+    private static SensorData? GetWebcamActive()
+    {
+        try
+        {
+            // Check for active webcam devices via WMI
+            using var searcher = new ManagementObjectSearcher(
+                "SELECT Status, Name FROM Win32_PnPEntity WHERE PNPClass='Camera' OR Name LIKE '%webcam%' OR Name LIKE '%camera%'");
+            bool found = false;
+            string status = "off";
+            foreach (var obj in searcher.Get())
+            {
+                found = true;
+                var devStatus = obj["Status"]?.ToString() ?? "";
+                // Status "OK" means device is active and ready
+                if (devStatus == "OK")
+                {
+                    status = "on";
+                    break;
+                }
+            }
+            if (!found) return null;
+            return new SensorData("webcam_active", Localization.Get("webcam_active", "Webcam Active"),
+                status, icon: "mdi:webcam", stateClass: "measurement");
+        }
+        catch { return null; }
     }
 
     public void Dispose()

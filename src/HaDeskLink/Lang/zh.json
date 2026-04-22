@@ -53,5 +53,14 @@
   "command_restart_msg": "HA DeskLink：电脑正在重启",
   "command_unknown": "未知命令：{0}",
   "ws_connected": "WebSocket 已连接到 HA",
-  "ws_disconnected": "WebSocket 已断开连接"
+  "ws_disconnected": "WebSocket 已断开连接",
+  "quickactions_title": "Quick Actions",
+  "quickactions_empty": "No Quick Actions configured.\nAdd in Settings.",
+  "quickactions_hotkey": "Hotkey: Ctrl+Shift+H",
+  "settings_quickactions": "Quick Actions:",
+  "settings_quickactions_hint": "Format: entity_id,name (per line)",
+  "settings_quickactions_example": "e.g. light.living_room,Living Room",
+  "screenshot_saved": "Screenshot saved",
+  "webcam_active": "Webcam Active",
+  "notification_action_executed": "Action executed"
 }

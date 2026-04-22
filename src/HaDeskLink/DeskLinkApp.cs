@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -23,6 +24,7 @@ namespace HaDeskLink;
 
 public class DeskLinkApp
 {
+    public static DeskLinkApp? Instance { get; private set; }
     private readonly Config _config;
     private readonly HaApiClient _api;
     private SensorManager? _sensors;
@@ -30,9 +32,11 @@ public class DeskLinkApp
     private readonly Dictionary<string, object> _lastSensorStates = new();
     private readonly CancellationTokenSource _cts = new();
     private NotifyIcon? _trayIcon;
+    private QuickActionHandler? _quickActionHandler;
 
     public DeskLinkApp(Config config)
     {
+        Instance = this;
         _config = config;
         _api = new HaApiClient(Config.GetConfigDir(), config.VerifySsl);
     }
@@ -131,13 +135,28 @@ public class DeskLinkApp
         if (_config.Autostart) Autostart.Enable();
         else Autostart.Disable();
 
+        // Quick Actions - register global hotkey
+        try
+        {
+            var quickActions = LoadQuickActions();
+            if (quickActions.Count > 0)
+            {
+                _quickActionHandler = new QuickActionHandler(() =>
+                    QuickActionWindow.ShowActions(quickActions, _api));
+                _quickActionHandler.Start();
+            }
+        }
+        catch { }
+
         Application.Run();
 
         _cts.Cancel();
+        _quickActionHandler?.Dispose();
         wsClient.Dispose();
         _webhookServer?.Dispose();
         _sensors?.Dispose();
         _trayIcon?.Dispose();
+        Instance = null;
     }
 
     private async void SensorLoop(CancellationToken ct)
@@ -205,6 +224,16 @@ public class DeskLinkApp
         {
             if (!string.IsNullOrEmpty(_config.HaUrl))
                 DashboardWindow.Open(_config.HaUrl);
+        });
+
+        menu.Items.Add(Localization.Get("quickactions_title", "Quick Actions") + " (Ctrl+Shift+H)", null, (s, e) =>
+        {
+            try
+            {
+                var qa = LoadQuickActions();
+                QuickActionWindow.ShowActions(qa, _api);
+            }
+            catch { }
         });
 
         menu.Items.Add(Localization.Get("tray_sensors_update"), null, async (s, e) =>
@@ -339,5 +368,30 @@ public class DeskLinkApp
         }
         catch { }
         return "2.2.0";
+    }
+
+    private List<QuickAction> LoadQuickActions()
+    {
+        var result = new List<QuickAction>();
+        try
+        {
+            var json = _config.QuickActions;
+            var arr = System.Text.Json.JsonDocument.Parse(json).RootElement;
+            foreach (var item in arr.EnumerateArray())
+            {
+                var entityId = item.TryGetProperty("entityId", out var eid) ? eid.GetString() ?? "" : "";
+                var name = item.TryGetProperty("name", out var n) ? n.GetString() ?? entityId : entityId;
+                if (!string.IsNullOrEmpty(entityId))
+                    result.Add(new QuickAction(entityId, name));
+            }
+        }
+        catch { }
+        return result;
+    }
+
+    public async Task UploadScreenshotAsync(string filePath)
+    {
+        try { await _api.UploadScreenshotAsync(filePath); }
+        catch { }
     }
 }
