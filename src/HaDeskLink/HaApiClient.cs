@@ -222,7 +222,7 @@ public class HaApiClient
     /// Get all entity states from Home Assistant.
     /// Returns a list of entity_id + friendly_name for Quick Actions.
     /// </summary>
-    public async Task<List<(string, string>> GetEntitiesAsync()
+    public async Task<List<(string entityId, string friendlyName)>> GetEntitiesAsync()
     {
         if (string.IsNullOrEmpty(_haUrl) || string.IsNullOrEmpty(_token))
             throw new InvalidOperationException("Not connected to HA");
