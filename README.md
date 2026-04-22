@@ -192,7 +192,7 @@ iscc installer.iss
 The Python version is completed and archived: [ha-desklink](https://github.com/FKirchweger/ha-desklink)
 
 ## License
-MIT
+GPL v3
 
 ## macOS Version
 There is currently no macOS version of HA DeskLink. Unfortunately, I don't have Mac hardware for testing. If you have a Mac and would like to help, see [Issue #1 in the Linux repo](https://github.com/TechFlipsi/ha-desklink-linux/issues/1).
