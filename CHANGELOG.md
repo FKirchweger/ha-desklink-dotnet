@@ -1,6 +1,10 @@
 # Changelog
 
 
+## [v3.0.2] - 2026-04-22
+- 🐛 **Bug Fix:** Webcam-Sensor zeigt jetzt korrekt "on/off" (prüft ob Kamera in Benutzung, nicht nur ob installiert)
+- 🐛 **Bug Fix:** Fullscreen-Erkennung verbessert – erkennt jetzt auch Browser mit F11 und maximierte Fenster
+
 ## [v3.0.1] - 2026-04-22
 - 🐛 **Bug Fix:** Token-Entschlüsselung gibt leeren String zurück → keine HA-Verbindung mehr (verhindert IP-Sperre durch zu viele fehlgeschlagene Auth-Versuche)
 - 🐛 **Bug Fix:** WebhookServer-Crash durch disposed CancellationTokenSource (Windows)
