@@ -62,5 +62,6 @@
   "settings_quickactions_example": "e.g. light.living_room,Living Room",
   "screenshot_saved": "Screenshot saved",
   "webcam_active": "Webcam Active",
-  "notification_action_executed": "Action executed"
+  "notification_action_executed": "Action executed",
+  "ha_desklink_version": "HA DeskLink Version"
 }

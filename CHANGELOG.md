@@ -1,6 +1,9 @@
 # Changelog
 
 
+## [v3.0.5] - 2026-04-22
+- ✨ **Neu:** ha_desklink_version Sensor – zeigt die aktuelle App-Version in Home Assistant
+
 ## [v3.0.4] - 2026-04-22
 - 🐛 **Bug Fix:** Fullscreen-Erkennung für Multi-Monitor verbessert (WorkArea-basiert)
 - 🐛 **Bug Fix:** fullscreen_app Sensor entfernt (duplikat von active_window)

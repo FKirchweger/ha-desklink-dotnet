@@ -101,6 +101,8 @@ public class SensorManager : IDisposable
         // Network throughput
         sensors.AddRange(GetNetworkSensors());
 
+        // App version
+        sensors.Add(GetAppVersion());
 
         return sensors;
     }
@@ -730,6 +732,13 @@ public class SensorManager : IDisposable
     }
 
     // === Webcam Active Sensor ===
+    private static SensorData GetAppVersion()
+    {
+        var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "unknown";
+        return new SensorData("ha_desklink_version", Localization.Get("ha_desklink_version", "HA DeskLink Version"),
+            version, icon: "mdi:information-outline");
+    }
+
     public void Dispose()
     {
         if (!_disposed)
