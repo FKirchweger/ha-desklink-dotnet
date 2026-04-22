@@ -135,19 +135,27 @@ public static class NotificationHandler
                     .AddArgument("command", action.Command ?? commandOnAction ?? ""));
             }
 
-            builder.Show(onActivated => =>
+            builder.Show();
+
+            ToastNotificationManagerCompat.OnActivated += onActivated =>
             {
-                var args = onActivated.Arguments;
-                if (args.Contains("command"))
+                var args = onActivated.Argument;
+                if (!string.IsNullOrEmpty(args))
                 {
-                    var cmd = args.GetArgument("command");
+                    var parts = args.Split(';');
+                    string? cmd = null;
+                    foreach (var part in parts)
+                    {
+                        if (part.StartsWith("command="))
+                            cmd = part.Substring("command=".Length);
+                    }
                     if (!string.IsNullOrEmpty(cmd))
                     {
                         try { CommandHandler.Execute(cmd); }
                         catch { }
                     }
                 }
-            });
+            };
 
             return; // Toast shown successfully
         }
