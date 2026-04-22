@@ -80,9 +80,21 @@ jobs:
           name: HA-DeskLink-Installer
           path: dist/
 
+      - name: Delete existing release if present
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            echo "Deleting existing release for tag $TAG"
+            gh release delete "$TAG" --yes --cleanup-tag || true
+          fi
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_name }}
+          fail_on_unmatched_files: true
           files: dist/HA_DeskLink_Setup_*.exe
           body: |
             HA DeskLink v${{ steps.version.outputs.VERSION }}
@@ -103,6 +115,7 @@ jobs:
           generate_release_notes: false
 
       - name: Discord Release Notification
+        if: always()
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
