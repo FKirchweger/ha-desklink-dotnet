@@ -475,13 +475,6 @@ public class SettingsWindow : Form
         public EntityItem(string entityId, string friendlyName) { EntityId = entityId; FriendlyName = friendlyName; }
         public override string ToString() => $"{FriendlyName} ({EntityId})";
     }
-    {
-        public string EntityId { get; }
-        public string FriendlyName { get; }
-        public EntityItem(string entityId, string friendlyName) { EntityId = entityId; FriendlyName = friendlyName; }
-        public override string ToString() => $"{FriendlyName} ({EntityId})";
-    }
-
     private void ApplyTheme(string theme)
     {
         bool dark = theme == "dark" || (theme == "system" && IsSystemDark());
