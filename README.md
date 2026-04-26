@@ -8,6 +8,10 @@
 
 **Windows Companion App für Home Assistant** – nativ, schnell, zuverlässig.
 
+> 🔍 **Suchst du einen Home Assistant Desktop-Companion?** HA DeskLink verbindet deinen PC direkt mit Home Assistant – Sensordaten, Systemstatus und Steuerelemente live auf dem Desktop. Kein Browser, kein Umweg.
+
+<!-- SEO: home assistant desktop app, home assistant windows companion, hass desktop, home assistant sensor monitor, smart home desktop widget -->
+
 📖 **[Betriebsanleitung / Manual](MANUAL.md)** – Installation, Sensoren, Befehle, Quick Actions, Actionable Notifications, Screenshot, Webcam, Plattform-Vergleich & mehr (DE + EN)
 
 📊 **[HASS.Agent vs. HA DeskLink](COMPARISON.md)** – Features, Architektur & Migration im Vergleich (DE + EN)
