@@ -19,4 +19,4 @@ Der gesamte Code (Architektur, Implementierung, Debugging, Tests) wurde von GLM-
 Wir suchen immer noch Verstärkung – besonders Mac-Tester für die macOS-Version! Siehe [Issue #1](https://github.com/TechFlipsi/ha-desklink-linux/issues/1).
 
 ## Community
-💬 [Discord](https://discord.gg/HnCZY54U7) – Fragen, Feedback, Hilfe
+💬 [Discord](https://discord.gg/7G2SqpXpsC) – Fragen, Feedback, Hilfe

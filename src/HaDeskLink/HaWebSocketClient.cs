@@ -40,8 +40,17 @@ public class HaWebSocketClient : IDisposable
     private bool _disposed;
     private int _msgId = 1;
     private bool _connected;
+    private int _authFailCount;
+    private const int MaxAuthFailures = 3;
+    private bool _loginBlocked;
 
     public bool IsConnected => _connected;
+
+    /// <summary>
+    /// Whether retries are blocked due to too many login failures.
+    /// Call ResetLoginBlock() to allow retries again.
+    /// </summary>
+    public bool LoginBlocked => _loginBlocked;
 
     public HaWebSocketClient(string haUrl, string token, string webhookId, NotifyIcon? trayIcon, Action<string>? onCommand = null)
     {
@@ -248,6 +257,16 @@ public class HaWebSocketClient : IDisposable
             }
         }
         catch { }
+    }
+
+    /// <summary>
+    /// Reset the login block so the WebSocket can attempt to reconnect.
+    /// Call this after the user fixes their token in settings.
+    /// </summary>
+    public void ResetLoginBlock()
+    {
+        _loginBlocked = false;
+        _authFailCount = 0;
     }
 
     public void Stop()

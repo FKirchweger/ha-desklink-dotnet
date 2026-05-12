@@ -322,7 +322,7 @@ public class DeskLinkApp
 
         menu.Items.Add(Localization.Get("tray_discord"), null, (s, e) =>
         {
-            Process.Start(new ProcessStartInfo("https://discord.gg/HnCZY54U7") { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo("https://discord.gg/7G2SqpXpsC") { UseShellExecute = true });
         });
 
         menu.Items.Add("-");
