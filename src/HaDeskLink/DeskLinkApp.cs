@@ -35,6 +35,7 @@ public class DeskLinkApp
     private QuickActionHandler? _quickActionHandler;
     private QuickActionHandler? _dashboardHotkey;
     private QuickActionHandler? _settingsHotkey;
+    internal HaWebSocketClient? _wsClient;
 
     public DeskLinkApp(Config config)
     {
@@ -81,6 +82,7 @@ public class DeskLinkApp
         var webhookId = _api.GetWebhookId();
         var wsClient = new HaWebSocketClient(_config.HaUrl, _config.HaToken, webhookId, _trayIcon,
             cmd => CommandHandler.Execute(cmd));
+        _wsClient = wsClient;
 
         try
         {
@@ -403,7 +405,7 @@ public class DeskLinkApp
             if (File.Exists(vfile)) return File.ReadAllText(vfile).Trim();
         }
         catch { }
-        return "2.2.0";
+        return "3.0.18";
     }
 
     private List<QuickAction> LoadQuickActions()

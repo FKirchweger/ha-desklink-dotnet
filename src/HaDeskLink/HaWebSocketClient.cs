@@ -68,6 +68,13 @@ public class HaWebSocketClient : IDisposable
 
         while (!_cts.Token.IsCancellationRequested)
         {
+            // Check if login is blocked before attempting connection
+            if (_loginBlocked)
+            {
+                try { await Task.Delay(5000, _cts.Token); } catch { break; }
+                continue;
+            }
+
             try
             {
                 _ws = new ClientWebSocket();
@@ -88,8 +95,22 @@ public class HaWebSocketClient : IDisposable
                 // Step 3: Receive auth_ok
                 msg = await ReceiveMessage();
                 if (msg == null || !msg.Contains("auth_ok"))
+                {
+                    // Auth failed – this is likely an invalid token
+                    _authFailCount++;
+                    if (_authFailCount >= MaxAuthFailures)
+                    {
+                        _loginBlocked = true;
+                        _trayIcon?.ShowBalloonTip(10000, "HA DeskLink",
+                            Localization.Get("settings_login_failed", "Login fehlgeschlagen. Token ungültig. Bitte überprüfe deinen Home Assistant Token in den Einstellungen."),
+                            ToolTipIcon.Error);
+                    }
                     throw new Exception("Auth failed: " + (msg ?? "no response"));
+                }
 
+                // Auth succeeded – reset failure count
+                _authFailCount = 0;
+                _loginBlocked = false;
                 _connected = true;
 
                 // Step 4: Subscribe to push notification channel
@@ -102,7 +123,9 @@ public class HaWebSocketClient : IDisposable
                 });
 
                 // Notify user that WebSocket is connected
-                _trayIcon?.ShowBalloonTip(3000, "HA DeskLink", "Verbunden mit Home Assistant (WebSocket)", ToolTipIcon.Info);
+                _trayIcon?.ShowBalloonTip(3000, "HA DeskLink",
+                    Localization.Get("ws_connected", "Verbunden mit Home Assistant (WebSocket)"),
+                    ToolTipIcon.Info);
 
                 // Step 5: Listen for notifications
                 await ListenLoop();

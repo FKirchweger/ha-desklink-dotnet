@@ -171,6 +171,7 @@ public class SettingsWindow : Form
         var actionPanel = new FlowLayoutPanel { Dock = DockStyle.Top, FlowDirection = FlowDirection.LeftToRight, WrapContents = true, AutoSize = true, Padding = new Padding(0, 5, 0, 15) };
         actionPanel.Controls.Add(MakeButton(Localization.Get("settings_save"), AccentBlue, OnSave));
         actionPanel.Controls.Add(MakeButton(Localization.Get("settings_reconnect_msg").Replace("...", ""), Color.FromArgb(0, 100, 180), OnReconnectClicked));
+        actionPanel.Controls.Add(MakeButton(Localization.Get("settings_retry", "Erneut verbinden"), Color.FromArgb(200, 50, 50), OnRetryClicked));
         actionPanel.Controls.Add(MakeButton(Localization.Get("settings_reset_device"), Color.FromArgb(180, 80, 0), OnResetDeviceId));
         actionPanel.Controls.Add(MakeButton(Localization.Get("settings_reregister_sensors"), Color.FromArgb(0, 130, 100), OnReRegisterSensors));
         content.Controls.Add(actionPanel);
@@ -609,6 +610,22 @@ public class SettingsWindow : Form
         if (_config.Autostart) Autostart.Enable(); else Autostart.Disable();
         ApplyTheme(_config.Theme);
         _statusLabel.Text = Localization.Get("settings_saved");
+    }
+
+    private void OnRetryClicked(object? sender, EventArgs e)
+    {
+        // Reset WebSocket login block so it can attempt to reconnect
+        var app = DeskLinkApp.Instance;
+        if (app?._wsClient != null && app._wsClient.LoginBlocked)
+        {
+            app._wsClient.ResetLoginBlock();
+            _statusLabel.Text = Localization.Get("settings_retry", "Login-Block zurückgesetzt. Starte neue Verbindung...");
+        }
+        else
+        {
+            _statusLabel.Text = Localization.Get("settings_reconnect_msg");
+        }
+        _onReconnect.Invoke();
     }
 
     private void OnReconnectClicked(object? sender, EventArgs e)

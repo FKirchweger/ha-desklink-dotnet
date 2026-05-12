@@ -97,5 +97,7 @@
   "settings_qa_edit": "Bearbeiten",
   "settings_qa_remove": "Entfernen",
   "settings_qa_select_first": "Bitte zuerst eine Quick Action auswählen!",
-  "settings_load_entities_first": "Bitte zuerst auf 'Entities laden' klicken!"
+  "settings_load_entities_first": "Bitte zuerst auf 'Entities laden' klicken!",
+  "settings_login_failed": "Login fehlgeschlagen. Token ungültig. Bitte überprüfe deinen Home Assistant Token in den Einstellungen.",
+  "settings_retry": "Erneut verbinden"
 }

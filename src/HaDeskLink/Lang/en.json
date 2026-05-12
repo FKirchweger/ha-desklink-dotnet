@@ -97,5 +97,7 @@
   "settings_qa_edit": "Edit",
   "settings_qa_remove": "Remove",
   "settings_qa_select_first": "Please select a Quick Action first!",
-  "settings_load_entities_first": "Please click 'Load Entities' first!"
+  "settings_load_entities_first": "Please click 'Load Entities' first!",
+  "settings_login_failed": "Login failed. Token invalid. Please check your Home Assistant token in settings.",
+  "settings_retry": "Retry connection"
 }

@@ -97,5 +97,7 @@
   "settings_qa_edit": "Editar",
   "settings_qa_remove": "Eliminar",
   "settings_qa_select_first": "¡Seleccione primero una Quick Action!",
-  "settings_load_entities_first": "¡Primero haga clic en 'Cargar entidades'!"
+  "settings_load_entities_first": "¡Primero haga clic en 'Cargar entidades'!",
+  "settings_login_failed": "Inicio de sesión fallido. Token no válido. Verifica tu token de Home Assistant en la configuración.",
+  "settings_retry": "Reintentar conexión"
 }

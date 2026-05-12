@@ -97,5 +97,7 @@
   "settings_qa_edit": "编辑",
   "settings_qa_remove": "删除",
   "settings_qa_select_first": "请先选择一个快速操作！",
-  "settings_load_entities_first": "请先点击\\加载实体\\！"
+  "settings_load_entities_first": "请先点击\\加载实体\\！",
+  "settings_login_failed": "登录失败。令牌无效。请在设置中检查你的 Home Assistant 令牌。",
+  "settings_retry": "重试连接"
 }

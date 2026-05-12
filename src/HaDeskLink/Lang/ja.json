@@ -97,5 +97,7 @@
   "settings_qa_edit": "編集",
   "settings_qa_remove": "削除",
   "settings_qa_select_first": "まずクイックアクションを選択してください！",
-  "settings_load_entities_first": "最初に「エンティティを読み込む」をクリックしてください！"
+  "settings_load_entities_first": "最初に「エンティティを読み込む」をクリックしてください！",
+  "settings_login_failed": "ログインに失敗しました。トークンが無効です。設定でHome Assistantトークンを確認してください。",
+  "settings_retry": "再接続"
 }

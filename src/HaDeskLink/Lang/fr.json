@@ -97,5 +97,7 @@
   "settings_qa_edit": "Modifier",
   "settings_qa_remove": "Supprimer",
   "settings_qa_select_first": "Veuillez d'abord sélectionner une Quick Action!",
-  "settings_load_entities_first": "Veuillez d'abord cliquer sur 'Charger les entités'!"
+  "settings_load_entities_first": "Veuillez d'abord cliquer sur 'Charger les entités'!",
+  "settings_login_failed": "Échec de connexion. Jeton invalide. Veuillez vérifier votre jeton Home Assistant dans les paramètres.",
+  "settings_retry": "Réessayer la connexion"
 }
