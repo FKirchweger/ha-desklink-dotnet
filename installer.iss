@@ -4,7 +4,7 @@
 
 [Setup]
 AppName={#AppName}
-AppVersion=3.0.18
+AppVersion=3.0.19
 AppPublisher=Fabian Kirchweger
 AppPublisherURL=https://github.com/FKirchweger/ha-desklink-dotnet
 AppSupportURL=https://github.com/FKirchweger/ha-desklink-dotnet/issues
